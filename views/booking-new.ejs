@@ -1,0 +1,135 @@
+<%- include('./partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/pages/booking.css">
+
+<div class="main-content mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">จองสถานที่</h1>
+    <a href="/booking" class="btn btn-outline-secondary">← กลับไปตารางการจอง</a>
+  </div>
+  <form action="/booking" method="POST">
+    <div class="form-group mb-3">
+      <label for="book_name">หัวข้อการจอง</label>
+      <input type="text" class="form-control" id="book_name" name="book_name" required>
+    </div>
+    <div class="form-group mb-3">
+      <label for="place_id">เลือกสถานที่</label>
+      <select class="form-control" id="place_id" name="place_id" required>
+        <% places.forEach(function(place) { %>
+          <option value="<%= place.place_id %>"><%= place.place_name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="form-group mb-3">
+      <label for="student_id">รหัสนักศึกษา</label>
+      <input type="text" class="form-control" id="student_id" name="student_id" value="<%= user.student_id %>" readonly required>
+    </div>
+    <div class="form-group mb-3">
+      <label for="date">วันที่ใช้สถานที่</label>
+      <input type="date" class="form-control" id="date" name="date" required>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="time_start">เวลาเริ่มต้น</label>
+        <select class="form-control" id="time_start" name="time_start" required>
+          <% 
+            const timeOptions = [];
+            for (let h = 8; h <= 18; h++) {
+              for (let m of [0, 30]) {
+                const hh = String(h).padStart(2, '0');
+                const mm = String(m).padStart(2, '0');
+                const label = `${hh}:${mm}`;
+                timeOptions.push(label);
+              }
+            }
+            // ตัด 18:30 ออกถ้าถูกสร้างมา
+            const normalized = timeOptions.filter(t => t <= '18:00');
+            normalized.forEach(t => { %>
+              <option value="<%= t %>"><%= t %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label for="time_end">เวลาสิ้นสุด</label>
+        <select class="form-control" id="time_end" name="time_end" required>
+          <% normalized.forEach(t => { %>
+            <option value="<%= t %>"><%= t %></option>
+          <% }); %>
+        </select>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">จอง</button>
+  </form>
+</div>
+
+<script>
+  (function(){
+    const startEl = document.getElementById('time_start');
+    const endEl = document.getElementById('time_end');
+    const form = document.querySelector('form[action="/booking"]');
+    const placeEl = document.getElementById('place_id');
+    const dateEl = document.getElementById('date');
+
+    const errorAlert = document.createElement('div');
+    errorAlert.className = 'alert alert-danger mt-3 d-none';
+    errorAlert.textContent = 'เวลาสิ้นสุดต้องมากกว่าเวลาเริ่มต้น';
+    form.appendChild(errorAlert);
+
+    function toMinutes(t){
+      const [h,m] = (t || '00:00').split(':').map(Number);
+      return h*60+m;
+    }
+
+    function validateTimes(){
+      const valid = toMinutes(endEl.value) > toMinutes(startEl.value);
+      errorAlert.classList.toggle('d-none', valid);
+      return valid;
+    }
+
+    async function checkConflict(){
+      if (!placeEl.value || !dateEl.value || !startEl.value || !endEl.value) return true;
+      try {
+        const params = new URLSearchParams({
+          place_id: placeEl.value,
+          date: dateEl.value,
+          time_start: startEl.value,
+          time_end: endEl.value
+        });
+        const res = await fetch(`/booking/check?${params.toString()}`);
+        const data = await res.json();
+        if (data.conflict) {
+          errorAlert.classList.remove('d-none');
+          errorAlert.textContent = data.message || 'ช่วงเวลานี้ถูกจองแล้ว กรุณาเลือกเวลาอื่น';
+          return false;
+        }
+        // reset to base message for invalid order case
+        errorAlert.textContent = 'เวลาสิ้นสุดต้องมากกว่าเวลาเริ่มต้น';
+        return true;
+      } catch (e) {
+        return true; // อย่าบล็อกจาก error เครือข่าย ให้ไปตรวจฝั่งเซิร์ฟเวอร์ตอน submit
+      }
+    }
+
+    startEl.addEventListener('change', validateTimes);
+    endEl.addEventListener('change', validateTimes);
+    placeEl.addEventListener('change', checkConflict);
+    dateEl.addEventListener('change', checkConflict);
+    startEl.addEventListener('change', checkConflict);
+    endEl.addEventListener('change', checkConflict);
+
+    form.addEventListener('submit', function(e){
+      if (!validateTimes()) {
+        e.preventDefault();
+        startEl.focus();
+        return;
+      }
+      // ตรวจซ้ำเวลาทับซ้อนแบบ async
+      e.preventDefault();
+      checkConflict().then(ok => {
+        if (ok) form.submit();
+      });
+    });
+  })();
+</script>
+
+

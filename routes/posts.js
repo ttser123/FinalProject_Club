@@ -467,6 +467,33 @@ router.get('/:id', async (req, res) => {
       [postId]
     );
 
+    // ดึงข้อมูลการจองสถานที่ของหัวหน้าชมรมในชมรมนี้
+    let bookings = [];
+    try {
+      const leaderStudentIds = approvedMembers
+        .filter(m => m.role === 'leader')
+        .map(m => m.student_id);
+      if (leaderStudentIds.length > 0) {
+        const placeholders = leaderStudentIds.map(() => '?').join(',');
+        const [bookingRows] = await db.query(
+          `SELECT CONCAT(u.f_name, ' ', u.l_name) AS reserver_name,
+                  b.book_name,
+                  pl.place_name AS place_name,
+                  b.date,
+                  b.time
+           FROM bookings b
+           JOIN users u ON u.student_id = b.student_id
+           JOIN places pl ON pl.place_id = b.place_id
+           WHERE b.student_id IN (${placeholders})
+           ORDER BY b.date DESC, b.time DESC`,
+          leaderStudentIds
+        );
+        bookings = bookingRows;
+      }
+    } catch (e) {
+      console.error('Error fetching bookings:', e);
+    }
+
     res.render('posts/show', {
       post,
       isMember,
@@ -476,6 +503,7 @@ router.get('/:id', async (req, res) => {
       approvedMembers,
       news,
       files,
+      bookings,
       req
     });
   } catch (error) {

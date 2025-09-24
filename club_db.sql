@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 24, 2025 at 02:19 PM
+-- Generation Time: Sep 24, 2025 at 04:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,6 +35,14 @@ CREATE TABLE `bookings` (
   `date` date NOT NULL,
   `time` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `bookings`
+--
+
+INSERT INTO `bookings` (`book_id`, `book_name`, `place_id`, `student_id`, `date`, `time`) VALUES
+(4, 'จอง', 1, '65160251', '2025-09-24', '08:30-11:00'),
+(6, '....', 1, '65160251', '2025-09-25', '08:00-11:30');
 
 -- --------------------------------------------------------
 
@@ -187,6 +195,14 @@ CREATE TABLE `places` (
   `place_name` varchar(255) NOT NULL,
   `status` enum('available','booked') DEFAULT 'available'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `places`
+--
+
+INSERT INTO `places` (`place_id`, `place_name`, `status`) VALUES
+(1, 'DMI Lab', 'available'),
+(2, '701 ตึกIT', 'available');
 
 -- --------------------------------------------------------
 
@@ -347,7 +363,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `book_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `book_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -383,7 +399,7 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `places`
 --
 ALTER TABLE `places`
-  MODIFY `place_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `place_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `posts`
