@@ -1,0 +1,31 @@
+<%- include('./partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/pages/notifications.css">
+
+<div class="main-content">
+  <h1 class="mb-4">การแจ้งเตือน</h1>
+  
+  <% if (notifications.length === 0) { %>
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle"></i> ไม่มีการแจ้งเตือน
+    </div>
+  <% } else { %>
+    <div class="notifications-list">
+      <% notifications.forEach(notification => { %>
+        <div class="notification-item card mb-3 <%= notification.is_read ? '' : 'unread' %>">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <p class="mb-0"><%= notification.message %></p>
+              <small class="text-muted"><%= new Date(notification.created_at).toLocaleString() %></small>
+            </div>
+            <% if (!notification.is_read) { %>
+              <form action="/notifications/<%= notification.id %>/read" method="POST" class="mt-2">
+                <button type="submit" class="btn btn-sm btn-outline-primary">ทำเครื่องหมายว่าอ่านแล้ว</button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div> 

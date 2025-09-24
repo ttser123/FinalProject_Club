@@ -1,0 +1,154 @@
+/* Sidebar Base Styles */
+.sidebar {
+  width: 280px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: url('/images/leaves-8931849.jpg')  center/cover no-repeat;
+  border-right: 1px solid #000000;
+  padding: 1.5rem;
+  overflow-y: auto;
+  transition: all 0.3s;
+  z-index: 1000;
+  color: #000000;
+}
+
+/* Sidebar Header */
+.sidebar-header {
+  margin-bottom: 2rem;
+}
+
+.sidebar-header h2 {
+  font-size: 1.50rem;
+  font-weight: 600;
+  color: #0d6efd;
+  margin-bottom: 1rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+.user-info {
+  background-color: #ffffff;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  color: #212529;
+}
+
+/* Search Form */
+.sidebar-header form {
+  display: flex;
+  margin-top: 1rem;
+}
+
+.sidebar-header input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem 0 0 0.25rem;
+  font-size: 0.875rem;
+}
+
+.sidebar-header button {
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0 0.25rem 0.25rem 0;
+  font-size: 0.875rem;
+}
+
+.sidebar-header button:hover {
+  background-color: #0b5ed7;
+}
+
+/* Navigation Links */
+.sidebar-nav {
+  margin-bottom: 2rem;
+}
+
+.nav-item {
+  margin-bottom: 0.5rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: #212529;
+  border: 1px solid rgba(255, 255, 255, 0.562); /* กรอบรอบข้อความเมนู */
+  background-color: rgba(255, 255, 255, 0.897); /* พื้นหลังโปร่งเล็กน้อยเพื่อให้อ่านง่ายบนภาพ */
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  background-color: #e9ecef;
+  color: #0b5ed7;
+  border-color: #0b5ed7; /* เน้นกรอบเมื่อโฮเวอร์ */
+}
+
+.nav-link.active {
+  background-color: #0d6efd;
+  color: white;
+  border-color: #0d6efd; /* กรอบให้เข้ากับสถานะ active */
+}
+
+.nav-link i {
+  margin-right: 0.75rem;
+  font-size: 1.25rem;
+}
+
+/* Logout Button */
+.logout-btn {
+  margin-top: 2rem;
+}
+
+.logout-btn .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.75rem;
+}
+
+.logout-btn i {
+  margin-right: 0.5rem;
+}
+
+/* Thai Font Support */
+body {
+  font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 240px;
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.show {
+    transform: translateX(0);
+  }
+  
+  .content {
+    margin-left: 0;
+  }
+}
+
+/* Light scrollbar for the sidebar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: #f8f9fa;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #adb5bd;
+  border-radius: 3px;
+}

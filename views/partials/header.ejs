@@ -1,0 +1,91 @@
+<!-- เพิ่ม Bootstrap 5 CSS และ Icon ใน head -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/partials/header.css">
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <h2>Club Management</h2>
+    <% if (user) { %>
+      <div class="user-info">
+        <p center class="mb-1 fw-bold text-dark">รหัสประจำตัว : <%= user.student_id %></p>
+        <p center class="mb-1 fw-bold text-dark"> <%= user.f_name %> <%= user.l_name %></p>
+      </div>
+    <% } %>
+    <form action="/index/search" method="get">
+      <input type="text" name="keyword" placeholder="ค้นหาชมรม" value="<%= typeof keyword !== 'undefined' ? keyword : '' %>">
+      <button type="submit">ค้นหา</button>
+    </form>
+
+  <nav class="sidebar-nav">
+    <ul class="nav flex-column">
+      <% if (user && (user.role === 'admin' || !isClubMember)) { %>
+      <li class="nav-item">
+        <a href="/index" class="nav-link" id="index">
+          <i class="bi bi-calendar-event"></i>
+          ชมรมทั้งหมด
+        </a>
+      </li>
+      <% } %>
+      <% if (user && user.role !== 'admin') { %>
+      <li class="nav-item">
+        <a href="/posts" class="nav-link" id="posts">
+          <i class="bi bi-journal-check"></i>
+          ชมรมของฉัน
+        </a>
+      </li>
+      <% } %>   
+      <% if (user && user.role === 'admin') { %>
+      <li class="nav-item">
+        <a href="/posts/add" class="nav-link" id="add">
+            <i class="bi bi-plus-circle"></i>
+          สร้างชมรม
+        </a>
+      </li>
+      <% } %>
+    </li>   
+    <% if (user && user.role === 'leader') { %>
+    <li class="nav-item">
+      <a href="/booking" class="nav-link" id="booking">
+          <i class="bi bi-calendar-check"></i>
+          จองสถานที่
+      </a>
+    </li>
+    <% } %>
+      <li class="nav-item">
+        <a href="/settings" class="nav-link" id="settings">
+          <i class="bi bi-gear"></i>
+          ตั้งค่า
+        </a>
+      </li>
+      <% if (user) { %>
+      <li class="nav-item">
+        <a href="/notifications" class="nav-link" id="notifications">
+          <i class="bi bi-bell"></i>
+          การแจ้งเตือน
+          <% if (unreadCount > 0) { %>
+            <span class="badge bg-danger rounded-circle" style="font-size: 0.7rem; padding: 0.2rem 0.4rem; margin-left: 4px;"><%= unreadCount %></span>
+          <% } %>
+        </a>
+      </li>
+      <% } %>
+    </ul>
+  </nav>
+
+  <% if (user) { %>
+    <div class="logout-btn">
+      <a href="/auth/logout" class="btn btn-outline-danger">
+        <i class="bi bi-box-arrow-left"></i>
+        Logout
+      </a>
+    </div>
+  <% } %>
+</aside>
+<script>
+  function confirmDelete(event) {
+    event.preventDefault(); // ป้องกันการส่งฟอร์มทันที
+    if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบโพสต์นี้?")) {
+      event.target.submit(); // ส่งฟอร์มถ้ากด OK
+    }
+  }
+</script>

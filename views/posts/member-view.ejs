@@ -1,0 +1,120 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/pages/index.css">
+
+<div class="main-content">
+ 
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><%= post.title %></h1>
+        <div class="badge bg-primary rounded-pill">
+          สมาชิก <%= approvedMembers.length %>/<%= post.member_limit %> คน
+        </div>
+      </div>
+      <p class="text-muted">
+        โดย <%= post.username %> | 
+        หมวดหมู่: <%= post.category_name %> |
+        วันที่: <%= new Date(post.created_at).toLocaleDateString('th-TH') %>
+      </p>
+      <div class="content">
+        <%- post.content %>
+      </div>
+ <!-- รูปภาพปกชมรม -->
+ <% if (post.cover_image) { %>
+  <div class="club-cover mb-4">
+    <img src="/uploads/<%= post.cover_image %>" alt="<%= post.title %>" class="img-fluid rounded">
+  </div>
+<% } %>
+      <!-- ส่วนแสดงรายชื่อสมาชิก -->
+      <div class="card mt-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">สมาชิกชมรม</h5>
+          <span class="badge bg-primary rounded-pill">
+            <%= approvedMembers.length %>/<%= post.member_limit %> คน
+          </span>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>ชื่อ-นามสกุล</th>
+                  <th>รหัสนิสิต</th>
+                  <th>บทบาท</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% approvedMembers.forEach(member => { %>
+                  <tr>
+                    <td><%= member.f_name %> <%= member.l_name %></td>
+                    <td><%= member.student_id %></td>
+                    <td><%= member.role %></td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <!-- ข้อมูลหัวหน้าชมรม -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">หัวหน้าชมรม</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <i class="bi bi-person-circle fs-1 text-primary"></i>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <h6 class="mb-1"><%= post.f_name %> <%= post.l_name %></h6>
+              <p class="text-muted mb-0">รหัสนิสิต: <%= post.student_id %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- สถานะการเป็นสมาชิก -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">สถานะของคุณ</h5>
+        </div>
+        <div class="card-body">
+          <% if (memberStatus === 'approved') { %>
+            <div class="alert alert-success">
+              <i class="bi bi-check-circle me-2"></i>
+              คุณเป็นสมาชิกของชมรมนี้
+            </div>
+            <p class="mb-0">บทบาท: <%= memberRole %></p>
+          <% } else if (memberStatus === 'pending') { %>
+            <div class="alert alert-warning">
+              <i class="bi bi-clock me-2"></i>
+              รอการอนุมัติจากหัวหน้าชมรม
+            </div>
+          <% } else if (memberStatus === 'rejected') { %>
+            <div class="alert alert-danger">
+              <i class="bi bi-x-circle me-2"></i>
+              การสมัครของคุณถูกปฏิเสธ
+            </div>
+          <% } else { %>
+            <% if (approvedMembers.length >= post.member_limit) { %>
+              <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                ชมรมนี้รับสมาชิกเต็มแล้ว
+              </div>
+            <% } else { %>
+              <form action="/posts/<%= post.id %>/join" method="POST">
+                <button type="submit" class="btn btn-primary w-100">สมัครเข้าชมรม</button>
+              </form>
+            <% } %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

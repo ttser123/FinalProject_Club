@@ -1,0 +1,46 @@
+<%- include('./partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/pages/booking.css">
+
+<div class="main-content mt-4">
+  <h1 class="mb-4">จองสถานที่</h1>
+  <% if (typeof success !== 'undefined') { %>
+    <div class="alert alert-success">จองสำเร็จ!</div>
+  <% } %>
+  <% if (typeof error !== 'undefined') { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+  <form action="/booking" method="POST">
+    <div class="form-group mb-3">
+      <label for="book_name">หัวข้อการจอง</label>
+      <input type="text" class="form-control" id="book_name" name="book_name" required>
+    </div>
+    <div class="form-group mb-3">
+      <label for="place_id">เลือกสถานที่</label>
+      <select class="form-control" id="place_id" name="place_id" required>
+        <% places.forEach(function(place) { %>
+          <option value="<%= place.place_id %>"><%= place.place_name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="form-group mb-3">
+      <label for="student_id">รหัสนักศึกษา</label>
+      <input type="text" class="form-control" id="student_id" name="student_id" value="<%= user.student_id %>" readonly required>
+    </div>
+    <div class="form-group mb-3">
+      <label for="date">วันที่ใช้สถานที่</label>
+      <input type="date" class="form-control" id="date" name="date" required>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <label for="time_start">เวลาเริ่มต้น</label>
+        <input type="time" class="form-control" id="time_start" name="time_start" required>
+      </div>
+      <div class="col-md-6">
+        <label for="time_end">เวลาสิ้นสุด</label>
+        <input type="time" class="form-control" id="time_end" name="time_end" required>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">จอง</button>
+  </form>
+</div> 

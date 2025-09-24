@@ -1,0 +1,46 @@
+<%- include('./partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/pages/settings.css">
+
+<div class="main-content">
+  <h1>Settings</h1>
+  <p>ปรับแต่งข้อมูลส่วนตัวและตั้งค่าต่าง ๆ ได้ที่หน้านี้</p>
+  
+  <!-- ฟอร์มแสดงข้อมูลผู้ใช้ (เริ่มต้นเป็นแบบอ่านอย่างเดียว) -->
+  <form id="settingsForm" action="/settings/update" method="post">
+    <div class="mb-3">
+      <label for="f_name" class="form-label">ชื่อ</label>
+      <input type="text" class="form-control" id="f_name" name="f_name" value="<%= user.f_name %>" disabled required>
+    </div>
+    <div class="mb-3">
+      <label for="l_name" class="form-label">นามสกุล</label>
+      <input type="text" class="form-control" id="l_name" name="l_name" value="<%= user.l_name %>" disabled required>
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">อีเมล</label>
+      <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" disabled required>
+    </div>
+    <div class="mb-3">
+      <label for="phone" class="form-label">เบอร์โทรศัพท์</label>
+      <input type="text" class="form-control" id="phone" name="phone" value="<%= user.phone %>" disabled>
+    </div>
+    
+    <!-- ปุ่มสำหรับเปิดให้แก้ไขข้อมูล -->
+    <button type="button" class="btn btn-secondary" onclick="enableEdit()">แก้ไขข้อมูล</button>
+    
+    <!-- ปุ่มสำหรับบันทึกข้อมูล (ซ่อนไว้จนกว่าจะกดแก้ไข) -->
+    <button type="submit" class="btn btn-primary d-none" id="saveBtn">บันทึกการตั้งค่า</button>
+  </form>
+</div>
+
+<script>
+  function enableEdit() {
+    // เปิดให้แก้ไขฟิลด์ทั้งหมด
+    document.getElementById('f_name').disabled = false;
+    document.getElementById('l_name').disabled = false;
+    document.getElementById('email').disabled = false;
+    document.getElementById('phone').disabled = false;
+    // แสดงปุ่มบันทึกการตั้งค่า
+    document.getElementById('saveBtn').classList.remove('d-none');
+  }
+</script>

@@ -1,0 +1,598 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/pages/index.css">
+
+<div class="main-content">
+  <div class="row">
+    <div class="col-md-8">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><%= post.title %></h1>
+        <% if (typeof req !== 'undefined' && req.session && req.session.user && req.session.user.id === post.user_id) { %>
+          <div class="d-flex gap-3">
+            <a href="/posts/<%= post.id %>/edit" class="text-primary text-decoration-none">
+              <i class="bi bi-pencil"></i> แก้ไข
+            </a>
+            <form action="/posts/delete/<%= post.id %>" method="post" onsubmit="return confirmDelete(event)" class="d-inline">
+              <button type="submit" class="btn btn-link text-danger text-decoration-none p-0 m-0">
+                <i class="bi bi-trash"></i> ลบ
+              </button>
+            </form>
+          </div>
+        <% } %>
+        
+      </div>
+      <p class="text-muted">
+        โดย <%= post.username %> | 
+        หมวดหมู่: <%= post.category_name %> |
+        วันที่: <%= new Date(post.created_at).toLocaleDateString('th-TH') %>
+      </p>
+      <div class="content">
+        <%- post.content %>
+      </div>
+
+      <% if (typeof req !== 'undefined' && req.session && req.session.user && 
+            (req.session.user.id === post.user_id || (isMember && memberStatus === 'approved'))) { %>
+        <!-- Club Management Section -->
+        <div class="club-management mt-5">
+          <!-- ประกาศข่าวสาร -->
+          <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">📢 ประกาศข่าวสาร</h5>
+                             <% if (typeof req !== 'undefined' && req.session && req.session.user && 
+                     (req.session.user.role === 'admin' || req.session.user.role === 'leader')) { %>
+                 <a href="/posts/<%= post.id %>/news/add" class="btn btn-primary btn-sm">
+                   <i class="bi bi-plus-circle"></i> เพิ่มข่าวสาร
+                 </a>
+               <% } %>
+            </div>
+            <div class="card-body">
+              <div class="news-list" style="max-height: 400px; overflow-y: auto;">
+                <% if (news && news.length > 0) { %>
+                  <% news.forEach(item => { %>
+                    <div class="news-item mb-3 p-3 border rounded">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                          <h6 class="mb-1"><%= item.title %></h6>
+                          <p class="text-muted small mb-2">
+                            หมวดหมู่: <%= item.category %> | 
+                            วันที่: <%= new Date(item.created_at).toLocaleDateString('th-TH') %>
+                          </p>
+                          <p class="mb-2"><%= item.content %></p>
+                        </div>
+                        <% if (typeof req !== 'undefined' && req.session && req.session.user && 
+                              (req.session.user.role === 'admin' || req.session.user.role === 'leader')) { %>
+                          <div class="d-flex gap-2">
+                            <a href="/posts/<%= post.id %>/news/<%= item.id %>/edit" class="news-btn-fix btn-primary-outline">
+                              <i class="bi bi-pencil"></i>
+                            </a>
+                            <form action="/posts/<%= post.id %>/news/<%= item.id %>/delete" method="POST" class="d-inline-block">
+                              <button type="submit" class="news-btn-fix btn-danger-outline" onclick="return confirm('คุณแน่ใจหรือไม่ที่จะลบข่าวสารนี้?')">
+                                <i class="bi bi-trash"></i>
+                              </button>
+                            </form>
+                          </div>
+                        <% } %>
+                      </div>
+                    </div>
+                  <% }); %>
+                <% } else { %>
+                  <p class="text-muted mb-0">ยังไม่มีข่าวสาร</p>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <!-- แสดงไฟล์ที่แนบมา -->
+          <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">📁 ไฟล์ที่แนบมา</h5>
+              <% if (typeof req !== 'undefined' && req.session && req.session.user && 
+                    (req.session.user.role === 'admin' || req.session.user.role === 'leader')) { %>
+                <a href="/posts/<%= post.id %>/files/upload" class="btn btn-primary btn-sm">
+                  <i class="fas fa-upload"></i> อัปโหลดไฟล์
+                </a>
+              <% } %>
+            </div>
+            <div class="card-body">
+              <div class="news-list" style="max-height: 400px; overflow-y: auto;">
+                <% if (files && files.length > 0) { %>
+                  <% files.forEach(file => {
+                    // Determine the appropriate icon based on file extension
+                    let fileIconClass = 'fas fa-file'; // Default icon
+                    const fileExtension = file.filename.split('.').pop().toLowerCase();
+                    if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                      fileIconClass = 'fas fa-file-image';
+                    } else if (['pdf'].includes(fileExtension)) {
+                      fileIconClass = 'fas fa-file-pdf';
+                    } else if (['doc', 'docx'].includes(fileExtension)) {
+                      fileIconClass = 'fas fa-file-word';
+                    } else if (['xls', 'xlsx'].includes(fileExtension)) {
+                      fileIconClass = 'fas fa-file-excel';
+                    } else if (['ppt', 'pptx'].includes(fileExtension)) {
+                      fileIconClass = 'fas fa-file-powerpoint';
+                    } else if (['zip', 'rar', '7z'].includes(fileExtension)) {
+                      fileIconClass = 'fas fa-file-archive';
+                    } else if (['txt'].includes(fileExtension)) {
+                      fileIconClass = 'fas fa-file-alt';
+                    } else if (['mp3', 'wav', 'ogg'].includes(fileExtension)) {
+                      fileIconClass = 'fas fa-file-audio';
+                    } else if (['mp4', 'avi', 'mov'].includes(fileExtension)) {
+                      fileIconClass = 'fas fa-file-video';
+                    }
+                  %>
+                    <div class="news-item mb-3 p-3 border rounded">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1 me-3">
+                          <a href="/uploads/<%= file.filename %>" class="text-decoration-none" download>
+                            <p class="mb-1 text-primary">
+                              <i class="<%= fileIconClass %> "></i>
+                              <%= file.display_name || file.originalname %>
+                            </p>
+                          </a>
+                          <% if (file.description) { %>
+                            <p class="mb-2"><%= file.description %></p>
+                          <% } %>
+                          <small class="text-muted d-block mt-1">
+                            อัปโหลดเมื่อ <%= new Date(file.created_at).toLocaleString('th-TH', { 
+                              year: 'numeric', 
+                              month: 'long', 
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            }) %>
+                          </small>
+                        </div>
+                        <% if (typeof req !== 'undefined' && req.session && req.session.user && 
+                              (req.session.user.role === 'admin' || req.session.user.role === 'leader')) { %>
+                          <div class="d-flex gap-2">
+                            <form action="/posts/<%= post.id %>/files/<%= file.id %>/delete" method="POST" class="d-inline-block">
+                              <button type="submit" class="news-btn-fix btn-danger-outline" onclick="return confirm('คุณแน่ใจหรือไม่ที่จะลบไฟล์นี้?')">
+                                <i class="bi bi-trash"></i>
+                              </button>
+                            </form>
+                          </div>
+                        <% } %>
+                      </div>
+                    </div>
+                  <% }); %>
+                <% } else { %>
+                  <p class="text-muted mb-0 p-3">ยังไม่มีไฟล์ที่แนบมา</p>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. จัดการสมาชิก -->
+          <div class="card mb-4">
+            <div class="card-header">
+              <h5 class="mb-0">🧑‍💼 จัดการสมาชิก</h5>
+            </div>
+            <div class="card-body">
+              <div class="member-management">
+                <div class="table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>ชื่อ-นามสกุล</th>
+                        <th>รหัสนิสิต</th>             
+                        <th>สถานะ</th>
+                        <% if (req.session.user.role === 'admin' || req.session.user.role === 'leader') { %>
+                        <th>การเข้าร่วมกิจกรรม</th>
+                        <th>จัดการ</th>
+                        <% } %>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% approvedMembers.forEach(member => { %>
+                        <tr>
+                          <td><%= member.f_name %> <%= member.l_name %></td>
+                          <td><%= member.student_id %></td>
+                          <td>
+                            <% if (member.role === 'admin') { %>
+                              <span class="badge bg-primary">ผู้ดูแล</span>
+                            <% } else if (member.role === 'leader') { %>
+                              <span class="badge bg-success">หัวหน้าชมรม</span>
+                            <% } else { %>
+                              <span class="badge bg-secondary">สมาชิก</span>
+                            <% } %>
+                          </td>
+                          <% if (req.session.user.role === 'admin' || req.session.user.role === 'leader') { %>
+                          <td>
+                            <button class="btn btn-info btn-sm view-stats" data-member-id="<%= member.id %>">ดูสถิติ</button>
+                          </td>
+                          <% if (member.role !== 'leader' && member.role !== 'admin') { %>
+                            <td>
+                              <button class="btn btn-danger btn-sm remove-member" data-member-id="<%= member.id %>" data-member-name="<%= member.f_name %> <%= member.l_name %>"><i class="bi bi-person-x"></i> ลบสมาชิก</button>
+                            </td>
+                          <% } %>
+                          <% } %>
+                        </tr>
+                      <% }); %>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- แสดงสถานะการสมัครสำหรับผู้ที่ยังไม่ได้รับการอนุมัติ -->
+      <% if (typeof req !== 'undefined' && req.session && req.session.user && 
+            isMember && memberStatus === 'pending') { %>
+        <div class="alert alert-warning mt-4">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-clock me-2"></i>
+            <div>
+              <strong>รอการอนุมัติเข้าชมรม</strong>
+              <p class="mb-0 mt-1">การสมัครของคุณกำลังรอการอนุมัติจากหัวหน้าชมรม</p>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="col-md-4">
+      <% if (typeof req !== 'undefined' && req.session && req.session.user) { %>
+        <% if (req.session.user.role === 'leader') { %>
+          <!-- Leader เท่านั้นที่เห็นส่วนอนุมัติ -->
+          <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">📝 ผู้สมัครรอการอนุมัติ</h5>
+              <% if (pendingMembers.length > 0) { %>
+                <form action="/posts/<%= post.id %>/approve-all" method="POST" class="d-inline" onsubmit="return confirm('คุณแน่ใจหรือไม่ที่จะอนุมัติผู้สมัครทั้งหมด?')">
+                  <button type="submit" class="btn btn-success btn-sm">
+                    <i class="bi bi-check-all"></i> อนุมัติทั้งหมด
+                  </button>
+                </form>
+              <% } %>
+            </div>
+            <div class="card-body">
+              <% if (pendingMembers.length > 0) { %>
+                <% pendingMembers.forEach(member => { %>
+                  <div class="member-request mb-3 p-3 border rounded">
+                    <p class="mb-1">
+                      <strong><%= member.f_name %> <%= member.l_name %></strong><br>
+                      รหัสนักศึกษา: <%= member.student_id %><br>
+                      วันที่สมัคร: <%= new Date(member.created_at).toLocaleDateString('th-TH') %>
+                    </p>
+                    <div class="d-flex gap-2">
+                      <form action="/posts/<%= post.id %>/approve/<%= member.id %>" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-success btn-sm">อนุมัติ</button>
+                      </form>
+                      <form action="/posts/<%= post.id %>/reject/<%= member.id %>" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm">ปฏิเสธ</button>
+                      </form>
+                    </div>
+                  </div>
+                <% }); %>
+              <% } else { %>
+                <p class="text-muted mb-0">ไม่มีผู้สมัครรอการอนุมัติ</p>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+      <% } %>
+
+      <!-- Card ขวา: ผู้ดูแลและหัวหน้าชมรม -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">👑 ผู้ดูแลและหัวหน้าชมรม</h5>
+        </div>
+        <div class="card-body">
+          <!-- ผู้ดูแล (เจ้าของชมรม) -->
+          <div class="mb-3">
+            <h6 class="text-primary mb-2">
+              <i class="bi bi-shield-check"></i> ผู้ดูแล
+            </h6>
+            <div class="d-flex align-items-center">
+              <div class="flex-shrink-0">
+                <i class="bi bi-person-circle fs-2 text-primary"></i>
+              </div>
+              <div class="flex-grow-1 ms-3">
+                <h6 class="mb-1"><%= post.f_name %> <%= post.l_name %></h6>
+                <p class="text-muted mb-0">รหัสนิสิต: <%= post.student_id %></p>
+                <small class="badge bg-primary">ผู้ดูแล</small>
+              </div>
+            </div>
+          </div>
+          <!-- หัวหน้าชมรม (leader) -->
+          <hr class="my-3">
+          <div>
+            <h6 class="text-success mb-2">
+              <i class="bi bi-star"></i> หัวหน้าชมรม
+            </h6>
+            <% 
+            const clubLeaders = approvedMembers.filter(member => member.role === 'หัวหน้าชมรม' || member.role === 'leader');
+            if (clubLeaders.length > 0) { 
+              clubLeaders.forEach(leader => { %>
+                <div class="d-flex align-items-center mb-2">
+                  <div class="flex-shrink-0">
+                    <i class="bi bi-person-circle fs-2 text-success"></i>
+                  </div>
+                  <div class="flex-grow-1 ms-3">
+                    <h6 class="mb-1"><%= leader.f_name %> <%= leader.l_name %></h6>
+                    <p class="text-muted mb-0">รหัสนิสิต: <%= leader.student_id %></p>
+                    <small class="badge bg-success">หัวหน้าชมรม</small>
+                  </div>
+                </div>
+            <% }) 
+            } else { %>
+              <div class="text-muted">ยังไม่มีหัวหน้าชมรม</div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <% if (typeof req !== 'undefined' && req.session && req.session.user) { %>
+        <% if (req.session.user.id !== post.user_id) { %>
+          <!-- ผู้ใช้ทั่วไป -->
+          <% if (!isMember) { %>
+            <form action="/posts/<%= post.id %>/join" method="POST">
+              <button type="submit" class="btn btn-primary w-100">สมัครเข้าชมรม</button>
+            </form>
+          <% } else { %>
+            <div class="alert alert-info">
+              <% if (memberStatus === 'pending') { %>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span><i class="bi bi-clock me-2"></i>สถานะ: รอการอนุมัติ</span>
+                  <form action="/posts/<%= post.id %>/cancel-join" method="POST" class="d-inline" onsubmit="return confirm('คุณแน่ใจหรือไม่ที่จะยกเลิกการสมัคร?')">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                      <i class="bi bi-x-circle"></i> ยกเลิกการสมัคร
+                    </button>
+                  </form>
+                </div>
+                <small class="text-muted d-block mt-2">
+                  คุณจะสามารถเข้าถึงประกาศข่าวสารและไฟล์ต่างๆ ได้เมื่อได้รับการอนุมัติแล้ว
+                </small>
+              <% } else if (memberStatus === 'approved') { %>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-check-circle me-2 text-success"></i>
+                  <span>สถานะ: เป็นสมาชิกแล้ว</span>
+                </div>
+              <% } else if (memberStatus === 'rejected') { %>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-x-circle me-2 text-danger"></i>
+                  <span>สถานะ: ถูกปฏิเสธ</span>
+                </div>
+              <% } %>
+            </div>
+          <% } %>
+        <% } %>
+      <% } else { %>
+        <div class="alert alert-warning">
+          กรุณาเข้าสู่ระบบเพื่อสมัครเข้าชมรม
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Modal สำหรับอัปโหลดไฟล์ -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-labelledby="uploadModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="uploadModalLabel">อัปโหลดไฟล์</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="/posts/<%= post.id %>/files" method="POST" enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="file" class="form-label">เลือกไฟล์</label>
+            <input type="file" class="form-control" id="file" name="file" required>
+            <small class="text-muted">รองรับไฟล์ขนาดไม่เกิน 10MB</small>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+            <button type="submit" class="btn btn-primary">อัปโหลด</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal สำหรับดูสถิติ -->
+<div class="modal fade" id="statsModal" tabindex="-1" aria-labelledby="statsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="statsModalLabel">สถิติการเข้าร่วมกิจกรรม</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="memberStats">
+          <!-- สถิติจะถูกเพิ่มด้วย JavaScript -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal สำหรับเพิ่ม/แก้ไขข่าวสาร -->
+<div class="modal fade" id="newsModal" tabindex="-1" aria-labelledby="newsModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newsModalLabel">เพิ่มข่าวสาร</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="newsForm" action="/posts/<%= post.id %>/news" method="POST">
+          <input type="hidden" name="news_id" id="newsId">
+          <div class="mb-3">
+            <label for="newsTitle" class="form-label">หัวข้อข่าว</label>
+            <input type="text" class="form-control" id="newsTitle" name="title" required>
+          </div>
+          <div class="mb-3">
+            <label for="newsContent" class="form-label">รายละเอียด</label>
+            <textarea class="form-control" id="newsContent" name="content" rows="4" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="newsCategory" class="form-label">หมวดหมู่</label>
+            <select class="form-select" id="newsCategory" name="category" required>
+              <option value="ประชุม">ประชุม</option>
+              <option value="กิจกรรม">กิจกรรม</option>
+              <option value="แจ้งเตือน">แจ้งเตือน</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+            <button type="submit" class="btn btn-primary">บันทึก</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Add confirmation dialog for delete
+function confirmDelete(event) {
+  if (!confirm('คุณแน่ใจหรือไม่ที่จะลบชมรมนี้?')) {
+    event.preventDefault();
+  }
+}
+
+// จัดการการลบสมาชิก
+document.addEventListener('DOMContentLoaded', function() {
+  const removeButtons = document.querySelectorAll('.remove-member');
+  removeButtons.forEach(button => {
+    button.addEventListener('click', async function() {
+      const memberId = this.dataset.memberId;
+      const memberName = this.dataset.memberName;
+      const postId = window.location.pathname.split('/')[2];
+
+      if (confirm(`คุณแน่ใจหรือไม่ที่จะลบสมาชิก ${memberName} ออกจากชมรม?`)) {
+        try {
+          const response = await fetch(`/posts/${postId}/members/${memberId}/remove`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            // ลบแถวของสมาชิกออกจากตาราง
+            this.closest('tr').remove();
+            alert('ลบสมาชิกออกจากชมรมเรียบร้อยแล้ว');
+          } else {
+            alert(data.error || 'เกิดข้อผิดพลาดในการลบสมาชิก');
+          }
+        } catch (error) {
+          alert('เกิดข้อผิดพลาดในการลบสมาชิก');
+          console.error('Error:', error);
+        }
+      }
+    });
+  });
+});
+
+// จัดการการแก้ไขข่าวสาร
+document.addEventListener('DOMContentLoaded', function() {
+  const editButtons = document.querySelectorAll('.edit-news');
+  const newsModal = document.getElementById('newsModal');
+  const newsForm = document.getElementById('newsForm');
+  const newsIdInput = document.getElementById('newsId');
+  const newsTitleInput = document.getElementById('newsTitle');
+  const newsContentInput = document.getElementById('newsContent');
+  const newsCategoryInput = document.getElementById('newsCategory');
+  const modalTitle = newsModal.querySelector('.modal-title');
+
+  editButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const newsId = this.dataset.newsId;
+      const title = this.dataset.title;
+      const content = this.dataset.content;
+      const category = this.dataset.category;
+
+      modalTitle.textContent = 'แก้ไขข่าวสาร';
+      newsIdInput.value = newsId;
+      newsTitleInput.value = title;
+      newsContentInput.value = content;
+      newsCategoryInput.value = category;
+      newsForm.action = `/posts/${window.location.pathname.split('/')[2]}/news/${newsId}/edit`;
+
+      new bootstrap.Modal(newsModal).show();
+    });
+  });
+
+  // รีเซ็ตฟอร์มเมื่อเปิด modal สำหรับเพิ่มข่าวสารใหม่
+  newsModal.addEventListener('show.bs.modal', function(event) {
+    if (!event.relatedTarget) return; // ถ้าไม่ได้เปิดจากปุ่มแก้ไข
+    modalTitle.textContent = 'เพิ่มข่าวสาร';
+    newsForm.reset();
+    newsIdInput.value = '';
+    newsForm.action = `/posts/${window.location.pathname.split('/')[2]}/news`;
+  });
+});
+
+// จัดการการอัปโหลดไฟล์
+document.addEventListener('DOMContentLoaded', function() {
+  const uploadModal = document.getElementById('uploadModal');
+  const uploadForm = uploadModal.querySelector('form');
+  const fileInput = document.getElementById('file');
+
+  // ตรวจสอบขนาดไฟล์ก่อนอัปโหลด
+  fileInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      if (file.size > maxSize) {
+        alert('ไฟล์มีขนาดใหญ่เกินไป (สูงสุด 10MB)');
+        this.value = ''; // ล้างการเลือกไฟล์
+      }
+    }
+  });
+
+  // จัดการการส่งฟอร์ม
+  uploadForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const postId = window.location.pathname.split('/')[2];
+
+    fetch(`/posts/${postId}/files`, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (response.ok) {
+        window.location.reload(); // รีโหลดหน้าเพื่อแสดงไฟล์ใหม่
+      } else {
+        throw new Error('เกิดข้อผิดพลาดในการอัปโหลดไฟล์');
+      }
+    })
+    .catch(error => {
+      alert(error.message);
+    });
+  });
+});
+
+// ฟังก์ชันลบไฟล์
+function deleteFile(fileId) {
+  if (confirm('คุณแน่ใจหรือไม่ที่จะลบไฟล์นี้?')) {
+    fetch(`/posts/<%= post.id %>/files/${fileId}/delete`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        alert('เกิดข้อผิดพลาดในการลบไฟล์');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('เกิดข้อผิดพลาดในการลบไฟล์');
+    });
+  }
+}
+</script>
+

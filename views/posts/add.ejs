@@ -1,0 +1,119 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/pages/index.css">
+
+<div class="main-content">
+  <h1>สร้างชมรม</h1>
+  
+  <% if (error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+  
+  <form action="/posts/add" method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label for="title" class="form-label">ชื่อชมรม</label>
+      <input type="text" class="form-control" id="title" name="title" required>
+    </div>
+    
+    <div class="mb-3">
+      <label for="content" class="form-label">รายละเอียด</label>
+      <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+    </div>
+    
+    <div class="mb-3">
+      <label for="category" class="form-label">หมวดหมู่</label>
+      <select class="form-select" id="category" name="category_id" required>
+        <% categories.forEach(category => { %>
+          <option value="<%= category.id %>"><%= category.name %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="member_limit" class="form-label">จำนวนสมาชิกสูงสุด</label>
+      <input type="number" class="form-control" id="member_limit" name="member_limit" min="1" required>
+      <div class="form-text">ระบุจำนวนสมาชิกสูงสุดที่ชมรมรับได้</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="club_leader_student_id" class="form-label">รหัสนิสิตหัวหน้าชมรม</label>
+      <input type="text" class="form-control" id="club_leader_student_id" name="club_leader_student_id" placeholder="เช่น 65000000" required>
+      <div class="form-text">ใส่รหัสนิสิตของหัวหน้าชมรม (ต้องเป็นนิสิตที่ยังไม่ได้เป็นสมาชิกหรือหัวหน้าชมรมอื่น)</div>
+      <div id="leader-status" class="mt-2"></div>
+    </div>
+
+    <div class="mb-3">
+      <label for="cover_image" class="form-label">รูปภาพปกชมรม</label>
+      <input type="file" class="form-control" id="cover_image" name="cover_image" accept="image/*">
+      <div class="form-text">แนะนำขนาดภาพ 1200x400 พิกเซล</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">สร้างชมรม</button>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const leaderInput = document.getElementById('club_leader_student_id');
+  const leaderStatus = document.getElementById('leader-status');
+  let checkTimeout;
+
+  // เพิ่ม: ดึงรหัสนิสิตของ admin จาก server (ฝังไว้ใน template)
+  const adminStudentId = "<%= typeof req !== 'undefined' && req.session && req.session.user ? req.session.user.student_id : '' %>";
+
+  // ถ้าเปิดหน้ามาแล้ว ช่องนี้มีค่าเป็นรหัส admin ให้ขึ้น error ทันที
+  if (leaderInput.value.trim() === adminStudentId && adminStudentId) {
+    leaderStatus.innerHTML = '<div class="alert alert-danger">Admin ไม่สามารถเป็นหัวหน้าชมรมเองได้ กรุณาเลือกนิสิตคนอื่นเป็นหัวหน้าชมรม</div>';
+  }
+
+  leaderInput.addEventListener('input', function() {
+    const studentId = this.value.trim();
+    clearTimeout(checkTimeout);
+    if (studentId.length === 0) {
+      leaderStatus.innerHTML = '';
+      return;
+    }
+
+    // รอให้ผู้ใช้พิมพ์เสร็จก่อนตรวจสอบ
+    checkTimeout = setTimeout(async function() {
+      try {
+        const response = await fetch('/posts/api/check-student-leader', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ student_id: studentId })
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.error) {
+          leaderStatus.innerHTML = `<div class="alert alert-danger">❌ ${data.error}</div>`;
+          return;
+        }
+        if (data.exists) {
+          if (!data.has_university_email) {
+            leaderStatus.innerHTML = '<div class="alert alert-danger">❌ นิสิตรหัสนี้ไม่มีอีเมลมหาลัย</div>';
+          } else if (!data.email_matches_student_id) {
+            leaderStatus.innerHTML = '<div class="alert alert-danger">❌ รหัสนิสิตในอีเมลไม่ตรงกับรหัสนิสิตที่กรอก</div>';
+          } else if (data.is_leader) {
+            const clubNames = data.leader_clubs.join(', ');
+            leaderStatus.innerHTML = `<div class="alert alert-warning">⚠️ นิสิตรหัสนี้เป็นหัวหน้าชมรม ${clubNames} อยู่แล้ว</div>`;
+          } else if (data.is_member) {
+            const clubNames = data.member_clubs.join(', ');
+            leaderStatus.innerHTML = `<div class="alert alert-warning">⚠️ นิสิตรหัสนี้เป็นสมาชิกชมรม ${clubNames} อยู่แล้ว</div>`;
+          } else {
+            leaderStatus.innerHTML = '<div class="alert alert-success">✅ นิสิตรหัสนี้สามารถเป็นหัวหน้าชมรมได้</div>';
+          }
+        } else {
+          leaderStatus.innerHTML = `<div class="alert alert-danger">❌ ${data.message || 'ไม่พบนิสิตรหัสนี้ในระบบ'}</div>`;
+        }
+      } catch (error) {
+        console.error('Error checking student:', error);
+        leaderStatus.innerHTML = '<div class="alert alert-danger">❌ เกิดข้อผิดพลาดในการตรวจสอบ กรุณาลองใหม่อีกครั้ง</div>';
+      }
+    }, 500);
+  });
+});
+</script>

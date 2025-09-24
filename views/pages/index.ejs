@@ -1,0 +1,76 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+    <h1 class="h2 fw-bold text-primary">ชมรมทั้งหมด</h1>
+  
+    <div class="d-flex align-items-center gap-2">
+      <!-- ส่วนของ Filter -->
+      <div class="d-flex align-items-center gap-2">
+        <label for="category" class="form-label mb-0 fw-semibold text-muted">Filter by Category:</label>
+        <form action="/index" method="GET" class="mb-0">
+          <select name="category" id="category" class="form-select form-select-sm" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            <% categories.forEach(category => { %>
+              <option value="<%= category.id %>" <%= selectedCategory == category.id ? 'selected' : '' %>>
+                <%= category.name %>
+              </option>
+            <% }) %>
+          </select>
+        </form>
+      </div>
+  
+      <!-- ส่วนของ Badge -->
+      <div class="badge bg-primary rounded-pill px-3 py-2 ms-2">
+        <%= posts.length %> ชมรม
+      </div>
+    </div>
+  </div>
+  
+  <% if (typeof posts !== 'undefined' && posts.length > 0) { %>
+    <div class="post-list">
+      <% posts.forEach(post => { %>
+        <article class="post-card card mb-4 shadow-sm">
+          <div class="card-body">
+            <h2 class="card-title mb-3">
+              <a href="/posts/<%= post.id %>" class="text-decoration-none text-dark"><%= post.title %></a>
+            </h2>
+            <p class="card-text text-muted mb-4"><%= post.content.substring(0, 150) %>...</p>
+            <div class="post-meta d-flex gap-4 text-muted">
+              <div class="d-flex align-items-center gap-1">
+                <i class="bi bi-tag"></i>
+                <%= post.category_name %>
+              </div>
+              <div class="d-flex align-items-center gap-1">
+                <i class="bi bi-clock"></i>
+                <%= new Date(post.created_at).toLocaleString() %>
+              </div>
+            </div>
+            
+            <% if (typeof req !== 'undefined' && req.session && req.session.user && req.session.user.role === 'admin') { %>
+<div class="post-actions mt-3 pt-3 border-top">
+              <div class="equal-actions compact">
+                <form action="/posts/<%= post.id %>/edit" method="GET">
+                  <button type="submit" class="action-btn">
+                    <i class="bi bi-pencil"></i> แก้ไข
+                  </button>
+                </form>
+                <form action="/posts/delete/<%= post.id %>" method="POST" onsubmit="return confirm('คุณแน่ใจหรือไม่ที่จะลบชมรมนี้?')">
+                  <button type="submit" class="action-btn danger">
+                    <i class="bi bi-trash"></i> ลบ
+                  </button>
+                </form>
+              </div>
+            </div>
+            <% } %>
+          </div>
+        </article>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle me-2"></i>
+      ไม่มีชมรมที่คุณสามารถเข้าร่วมได้ในขณะนี้
+    </div>
+  <% } %>
+</div>
