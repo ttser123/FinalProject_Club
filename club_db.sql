@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 24, 2025 at 12:36 PM
+-- Generation Time: Sep 24, 2025 at 02:19 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -47,6 +47,53 @@ CREATE TABLE `categories` (
   `name` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`) VALUES
+(21, 'Cybersecurity'),
+(22, 'Data/AI'),
+(23, 'Game Dev'),
+(31, 'การตลาด'),
+(41, 'การเกษตร/ปลูกผัก'),
+(30, 'การเงิน/ลงทุน'),
+(1, 'กีฬา'),
+(6, 'ขับร้อง/วง'),
+(15, 'คณิตศาสตร์'),
+(32, 'จิตอาสา'),
+(5, 'ดนตรี'),
+(12, 'ถ่ายภาพ'),
+(38, 'ทำอาหาร'),
+(29, 'ผู้ประกอบการ'),
+(2, 'ฟิตเนส/วิ่ง'),
+(9, 'ภาพยนตร์'),
+(26, 'ภาษาจีน'),
+(25, 'ภาษาญี่ปุ่น'),
+(24, 'ภาษาอังกฤษ'),
+(27, 'ภาษาเกาหลี'),
+(17, 'มนุษยศาสตร์'),
+(8, 'ละครเวที'),
+(36, 'วรรณกรรม/อ่านหนังสือ'),
+(28, 'วัฒนธรรม/แลกเปลี่ยน'),
+(10, 'วาด/เพนต์'),
+(14, 'วิทยาศาสตร์'),
+(16, 'วิศวกรรม'),
+(40, 'ศาสนา/ความเชื่อ'),
+(4, 'ศิลปะการต่อสู้'),
+(18, 'สังคมศาสตร์'),
+(34, 'สาธารณสุข'),
+(33, 'สิ่งแวดล้อม/รักษ์โลก'),
+(13, 'สื่อ/นิเทศ'),
+(20, 'หุ่นยนต์/IoT'),
+(11, 'ออกแบบ/กราฟิก'),
+(37, 'เกม/eSports'),
+(39, 'เดินป่า/ท่องเที่ยว'),
+(7, 'เต้น'),
+(35, 'โต้วาที/พูดในที่สาธารณะ'),
+(19, 'โปรแกรมมิ่ง'),
+(3, 'โยคะ');
+
 -- --------------------------------------------------------
 
 --
@@ -61,6 +108,15 @@ CREATE TABLE `club_members` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `role` enum('member','admin','leader') NOT NULL DEFAULT 'member'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `club_members`
+--
+
+INSERT INTO `club_members` (`id`, `post_id`, `user_id`, `status`, `created_at`, `role`) VALUES
+(1, 1, 1, 'approved', '2025-09-24 11:00:01', 'admin'),
+(2, 1, 2, 'approved', '2025-09-24 11:00:01', 'leader'),
+(5, 1, 3, 'approved', '2025-09-24 11:05:42', 'member');
 
 -- --------------------------------------------------------
 
@@ -110,6 +166,16 @@ CREATE TABLE `notifications` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `notifications`
+--
+
+INSERT INTO `notifications` (`id`, `user_id`, `post_id`, `message`, `is_read`, `created_at`) VALUES
+(1, 1, 1, 'user0001 user0001 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 0, '2025-09-24 11:03:02'),
+(2, 1, 1, 'user0001 user0001 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 1, '2025-09-24 11:03:44'),
+(3, 1, 1, 'user0001 user0001 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 1, '2025-09-24 11:05:42'),
+(4, 3, 1, 'การสมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ ได้รับการอนุมัติแล้ว', 0, '2025-09-24 11:06:01');
+
 -- --------------------------------------------------------
 
 --
@@ -139,6 +205,13 @@ CREATE TABLE `posts` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `member_limit` int(11) NOT NULL DEFAULT 50
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `posts`
+--
+
+INSERT INTO `posts` (`id`, `title`, `content`, `user_id`, `category_id`, `created_at`, `cover_image`, `updated_at`, `member_limit`) VALUES
+(1, 'ชมรมถ่ายภาพธรรมชาติ', 'ถ่ายภาพธรรมชาติ', 1, 12, '2025-09-24 11:00:01', NULL, '2025-09-24 11:00:01', 19);
 
 -- --------------------------------------------------------
 
@@ -174,6 +247,19 @@ CREATE TABLE `users` (
   `role` enum('member','admin','leader') NOT NULL DEFAULT 'member',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `student_id`, `username`, `email`, `password`, `phone`, `f_name`, `l_name`, `role`, `created_at`) VALUES
+(1, '65160258', 'admintoey', '65160258@go.buu.ac.th', '$2b$10$7IvMOpcorkkxIF3m0sg32OPrmhCzSLA9vFl/bDIBihQcCPiigOAIe', '0957743139', 'admintoey', 'admintoey', 'admin', '2025-09-24 10:49:49'),
+(2, '65160251', 'leaderpao', '65160251@go.buu.ac.th', '$2b$10$lEFYvw0mgzb2WJN4vR5FJubyskPW4w4OqqIeDEUgmdpFGh.KI3hkm', '0957743138', 'leaderpao', 'leaderpao', 'leader', '2025-09-24 10:50:41'),
+(3, '65160001', 'user0001', '65160001@go.buu.ac.th', '$2b$10$TBxcwKY7fecBzZKREaP./e0i9itjvuNkm3dmX4t6f/sjD7PMy5IUu', '0957743137', 'user0001', 'user0001', 'member', '2025-09-24 10:51:14'),
+(4, '65160002', 'user0002', '65160002@go.buu.ac.th', '$2b$10$PU7.XvtwU8UH4eDir3/j7el1.GhCes2x1OnXJPmDXjlk1Tv8frPCq', '0957743136', 'user0002', 'user0002', 'member', '2025-09-24 10:51:50'),
+(5, '65160003', 'user0003', '65160003@go.buu.ac.th', '$2b$10$JOpmp1ctz3mQ6g/59SlTsOMLEuQgDPcLTkCrJy8awWkU3miTjmaxm', '0957743131', 'user0003', 'user0003', 'member', '2025-09-24 10:52:26'),
+(6, '65160004', 'user0004', '65160004@go.buu.ac.th', '$2b$10$Wgng3QJi/rPh6I0gTAXkUuUzaQmiyZONE1Z9zdtrUXtRxxak2/w9G', '0957743132', 'user0004', 'user0004', 'member', '2025-09-24 10:52:53'),
+(7, '65160005', 'user0005', '65160005@go.buu.ac.th', '$2b$10$YYBzVgIqfntjOFlXzKfbwuGAq5wovlMI3lcb71U9XvdblSz2Q8pX.', '0957743133', 'user0005', 'user0005', 'member', '2025-09-24 10:54:02');
 
 --
 -- Indexes for dumped tables
@@ -267,13 +353,13 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `club_members`
 --
 ALTER TABLE `club_members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `files`
@@ -291,7 +377,7 @@ ALTER TABLE `news`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `places`
@@ -303,7 +389,7 @@ ALTER TABLE `places`
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `role_history`
@@ -315,7 +401,7 @@ ALTER TABLE `role_history`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Constraints for dumped tables
