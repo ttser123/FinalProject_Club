@@ -1,0 +1,261 @@
+<!-- views/auth/register.ejs -->
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>สมัครสมาชิก - เว็บจัดการชมรม</title>
+  <link rel="stylesheet" href="/css/auth/auth.css">
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo">
+       <h1 class="logo-text">Club Management</h1>
+    </div>
+    <h2>สมัครสมาชิก</h2>
+    
+    <form action="/auth/register" method="POST" onsubmit="return validatePasswords()">
+      <p class="overbox">รหัสนิสิต</p>
+      <input type="text" name="student_id" id="student_id" placeholder="รหัสนิสิต" required pattern="[0-9]{8}" title="กรุณากรอกรหัสนิสิต 8 หลัก">
+      <p class="overbox">อีเมลมหาลัย</p>
+      <input type="email" name="email" id="email" placeholder="เช่น 65160000@go.buu.ac.th" required pattern="[0-9]{8}@go\.buu\.ac\.th" title="กรุณากรอกอีเมลมหาลัยในรูปแบบ 65160000@go.buu.ac.th">
+      <div id="email-status" class="mt-2"></div>
+      <p class="overbox">ชื่อผู้ใช้</p>
+      <input type="text" name="username" id="username" placeholder="Username" required minlength="3" maxlength="20">
+      <div id="username-status" class="mt-2"></div>
+      <p class="overbox">รหัสผ่าน</p>
+      <div class="password-container">
+        <input type="password" id="password" name="password" placeholder="Password" required minlength="8" maxlength="72" pattern="(?=(?:.*[A-Za-z]){3,}).*" title="ต้องมีตัวอักษรอย่างน้อย 3 ตัว">
+        <span id="togglePassword" class="toggle-password">Show</span>
+      </div>
+      <div id="password-status" class="mt-2"></div>
+      <p class="text-success mb-1">- ต้องมีตัวอักษรภาษาอังกฤษอย่างน้อย 8 ตัวอักษร และไม่เกิน 72 ตัวอักษร</p>
+      <p class="text-success mb-2">- ต้องมีตัวอักษรภาษาอังกฤษ (A–Z หรือ a–z) อย่างน้อย 3 ตัว</p>
+      <p class="overbox">ยืนยันรหัสผ่าน</p>
+      <div class="password-container">
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required minlength="8" maxlength="72">
+        <span id="toggleConfirmPassword" class="toggle-password">Show</span>
+      </div>
+      <div id="confirm-status" class="mt-2"></div>
+      <p class="overbox">ชื่อจริง</p>
+      <input type="text" name="f_name" placeholder="First Name" required>
+      <p class="overbox">นามสกุล</p>
+      <input type="text" name="l_name" placeholder="Last Name" required>
+      <p class="overbox">เบอร์ติดต่อ</p>
+      <input type="text" name="phone" placeholder="Phone" required>
+      <% if (error) { %>
+      <div class="error-message"><%= error %></div>
+    <% } %>
+      <button type="submit">Register</button>
+    </form>
+    
+    <p>มีบัญชีแล้ว <a href="/auth/login">เข้าสู่ระบบ</a></p>
+  </div>
+  <script src="/js/auth.js"></script>
+  <script>
+    // ค่าคงที่
+    const EMAIL_PATTERN = /^[0-9]{8}@go\.buu\.ac\.th$/;
+    const DEBOUNCE_DELAY = 500;
+    const USERNAME_MIN = 3;
+    const USERNAME_MAX = 20;
+    const PASSWORD_MIN = 8;
+    const PASSWORD_MAX = 72;
+    const PASSWORD_MIN_LETTERS = 3;
+
+    // ฟังก์ชันแสดงสถานะอีเมล
+    function showEmailStatus(message, isError = false) {
+      const emailStatus = document.getElementById('email-status');
+      const className = isError ? 'error-message' : 'success-message';
+      emailStatus.innerHTML = `<div class="${className}">${message}</div>`;
+    }
+
+    // ฟังก์ชันตรวจสอบรูปแบบอีเมล
+    function validateEmailFormat(email) {
+      return EMAIL_PATTERN.test(email);
+    }
+
+    // ฟังก์ชันตรวจสอบความตรงกันของรหัสนิสิต
+    function validateStudentIdMatch(email, studentId) {
+      if (!email || !studentId) return true;
+      const emailStudentId = email.split('@')[0];
+      return emailStudentId === studentId;
+    }
+
+    // ฟังก์ชันตรวจสอบอีเมลกับเซิร์ฟเวอร์
+    async function checkEmailWithServer(email) {
+      try {
+        const response = await fetch('/auth/check-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        
+        const data = await response.json();
+        
+        if (data.exists) {
+          showEmailStatus('❌ อีเมลนี้ถูกใช้งานแล้ว', true);
+        } else {
+          showEmailStatus('✅ อีเมลมหาลัยถูกต้องและสามารถใช้งานได้');
+        }
+      } catch (error) {
+        console.error('Error checking email:', error);
+        showEmailStatus('❌ เกิดข้อผิดพลาดในการตรวจสอบ', true);
+      }
+    }
+
+    // ฟังก์ชันจัดการการแสดง/ซ่อนรหัสผ่าน
+    function setupPasswordToggle(toggleId, passwordId) {
+      const toggle = document.getElementById(toggleId);
+      const passwordField = document.getElementById(passwordId);
+      
+      toggle.addEventListener('click', function() {
+        const isPassword = passwordField.type === 'password';
+        passwordField.type = isPassword ? 'text' : 'password';
+        this.textContent = isPassword ? 'Hide' : 'Show';
+      });
+    }
+
+    // ฟังก์ชันตรวจความยาวและความตรงกันของรหัสผ่าน ก่อน submit
+    function validatePasswords() {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm_password').value;
+      const passwordStatus = document.getElementById('password-status');
+      const confirmStatus = document.getElementById('confirm-status');
+
+      // ความยาว
+      if (password.length < PASSWORD_MIN || password.length > PASSWORD_MAX) {
+        passwordStatus.innerHTML = `<div class="error-message">❌ รหัสผ่านต้องมีความยาว ${PASSWORD_MIN}-${PASSWORD_MAX} ตัวอักษร</div>`;
+        return false;
+      }
+
+      // ตรงกัน
+      if (password !== confirmPassword) {
+        confirmStatus.innerHTML = '<div class="error-message">❌ รหัสผ่านไม่ตรงกัน</div>';
+        return false;
+      }
+
+      passwordStatus.innerHTML = '';
+      confirmStatus.innerHTML = '';
+      return true;
+    }
+
+    // ฟังก์ชันหลักสำหรับตรวจสอบอีเมล
+    function setupEmailValidation() {
+      const emailInput = document.getElementById('email');
+      const studentIdInput = document.getElementById('student_id');
+      let checkTimeout;
+
+      // ตรวจสอบเมื่อพิมพ์อีเมล
+      emailInput.addEventListener('input', function() {
+        const email = this.value.trim();
+        const studentId = studentIdInput.value.trim();
+        
+        clearTimeout(checkTimeout);
+        
+        if (email.length === 0) {
+          document.getElementById('email-status').innerHTML = '';
+          return;
+        }
+
+        // ตรวจสอบรูปแบบอีเมล
+        if (!validateEmailFormat(email)) {
+          showEmailStatus('❌ กรุณากรอกอีเมลมหาลัยในรูปแบบ 65160000@go.buu.ac.th', true);
+          return;
+        }
+
+        // ตรวจสอบความตรงกันของรหัสนิสิต
+        if (!validateStudentIdMatch(email, studentId)) {
+          showEmailStatus('❌ รหัสนิสิตในอีเมลไม่ตรงกับรหัสนิสิตที่กรอก', true);
+          return;
+        }
+
+        // ตรวจสอบกับเซิร์ฟเวอร์
+        checkTimeout = setTimeout(() => checkEmailWithServer(email), DEBOUNCE_DELAY);
+      });
+
+      // ตรวจสอบเมื่อเปลี่ยนรหัสนิสิต
+      studentIdInput.addEventListener('input', function() {
+        const email = emailInput.value.trim();
+        const studentId = this.value.trim();
+        
+        if (email && studentId) {
+          if (validateStudentIdMatch(email, studentId)) {
+            showEmailStatus('✅ รหัสนิสิตตรงกัน');
+          } else {
+            showEmailStatus('❌ รหัสนิสิตในอีเมลไม่ตรงกับรหัสนิสิตที่กรอก', true);
+          }
+        }
+      });
+    }
+
+    // ฟังก์ชันตรวจ username แบบ realtime
+    function setupUsernameValidation() {
+      const usernameInput = document.getElementById('username');
+      const usernameStatus = document.getElementById('username-status');
+      usernameInput.addEventListener('input', function() {
+        const u = this.value.trim();
+        if (u.length === 0) {
+          usernameStatus.innerHTML = '';
+          return;
+        }
+        if (u.length < USERNAME_MIN || u.length > USERNAME_MAX) {
+          usernameStatus.innerHTML = `<div class="error-message">❌ ชื่อผู้ใช้ต้องมีความยาว ${USERNAME_MIN}-${USERNAME_MAX} ตัวอักษร</div>`;
+        } else {
+          usernameStatus.innerHTML = '<div class="success-message">✅ ความยาวชื่อผู้ใช้ถูกต้อง</div>';
+        }
+      });
+    }
+
+    // ฟังก์ชันตรวจ password แบบ realtime
+    function setupPasswordValidation() {
+      const passwordInput = document.getElementById('password');
+      const confirmInput = document.getElementById('confirm_password');
+      const passwordStatus = document.getElementById('password-status');
+      const confirmStatus = document.getElementById('confirm-status');
+
+      function checkPassword() {
+        const p = passwordInput.value;
+        if (p.length === 0) {
+          passwordStatus.innerHTML = '';
+          return;
+        }
+        if (p.length < PASSWORD_MIN || p.length > PASSWORD_MAX) {
+          passwordStatus.innerHTML = `<div class=\"error-message\">❌ รหัสผ่านต้องมีความยาว ${PASSWORD_MIN}-${PASSWORD_MAX} ตัวอักษร</div>`;
+        } else {
+          const letters = (p.match(/[A-Za-z]/g) || []).length;
+          if (letters < PASSWORD_MIN_LETTERS) {
+            passwordStatus.innerHTML = `<div class=\"error-message\">❌ รหัสผ่านต้องมีตัวอักษรอย่างน้อย ${PASSWORD_MIN_LETTERS} ตัว</div>`;
+          } else {
+            passwordStatus.innerHTML = '<div class="success-message">✅ รูปแบบรหัสผ่านถูกต้อง</div>';
+          }
+        }
+      }
+
+      function checkConfirm() {
+        const p = passwordInput.value;
+        const c = confirmInput.value;
+        if (c.length === 0) {
+          confirmStatus.innerHTML = '';
+          return;
+        }
+        if (p !== c) {
+          confirmStatus.innerHTML = '<div class="error-message">❌ รหัสผ่านไม่ตรงกัน</div>';
+        } else {
+          confirmStatus.innerHTML = '<div class="success-message">✅ รหัสผ่านตรงกัน</div>';
+        }
+      }
+
+      passwordInput.addEventListener('input', () => { checkPassword(); checkConfirm(); });
+      confirmInput.addEventListener('input', checkConfirm);
+    }
+
+    // เริ่มต้นเมื่อโหลดหน้า
+    document.addEventListener('DOMContentLoaded', function() {
+      setupEmailValidation();
+      setupUsernameValidation();
+      setupPasswordValidation();
+      setupPasswordToggle('togglePassword', 'password');
+      setupPasswordToggle('toggleConfirmPassword', 'confirm_password');
+    });
+  </script>
+</body>
+</html>

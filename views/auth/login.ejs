@@ -1,0 +1,50 @@
+<!-- views/auth/login.ejs -->
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>เข้าสู่ระบบ - เว็บจัดการชมรม</title>
+  <link rel="stylesheet" href="/css/auth/auth.css">
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo">
+       <h1 class="logo-text">Club Management</h1>
+    </div>
+    <h2>ลงชื่อเข้าใช้</h2>
+    
+    <form action="/auth/login" method="POST">
+      <p class="overbox">ชื่อผู้ใช้</p>
+      <input type="text" name="username" id="login_username" required minlength="3" maxlength="20">
+      <div id="login-username-status" class="mt-2"></div>
+      <p class="overbox">รหัสผ่าน</p>
+      <div class="password-container">
+        <input type="password" id="password" name="password" required minlength="8" maxlength="72">
+        <span id="togglePassword" class="toggle-password">Show</span>
+      </div> 
+      <div id="login-password-status" class="mt-2"></div>
+      <% if (error) { %>
+      <div class="error-message"><%= error %></div>
+    <% } %>
+      <button type="submit">Login</button>
+    </form>
+
+    
+    <p>ยังไม่มีบัญชี? <a href="/auth/register">สมัครสมาชิก</a></p>
+  </div>
+  
+  <script>
+
+    document.getElementById('togglePassword').addEventListener('click', function () {
+      const passwordField = document.getElementById('password');
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        this.textContent = 'Hide';
+      } else {
+        passwordField.type = 'password';
+        this.textContent = 'Show';
+      }
+    });
+  </script>
+</body>
+</html>

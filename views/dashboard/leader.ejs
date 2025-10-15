@@ -1,0 +1,73 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+    <h1 class="h3 mb-0">แดชบอร์ดหัวหน้าชมรม</h1>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="text-muted">ชมรมที่ดูแล</div>
+          <div class="fw-bold fs-4"><%= leaderClubs.length %></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="text-muted">สมาชิกที่อนุมัติ</div>
+          <div class="fw-bold fs-4"><%= memberCount %></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="text-muted">สมัครรออนุมัติ</div>
+          <div class="fw-bold fs-4"><%= pendingCount %></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="text-muted">การจองที่สร้าง</div>
+          <div class="fw-bold fs-4"><%= leaderBookings %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">อัตราการเข้าร่วมโดยประมาณ</h5>
+        <div class="badge bg-primary"><%= participationRate %>%</div>
+      </div>
+      <div class="text-muted mt-2">คิดจากสัดส่วน Approved ต่อ Approved+Pending</div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="mb-3">ชมรมที่ดูแล</h5>
+      <% if (leaderClubs.length === 0) { %>
+        <div class="text-muted">คุณยังไม่ได้เป็นหัวหน้าชมรมใด</div>
+      <% } else { %>
+        <ul class="list-group">
+          <% leaderClubs.forEach(c => { %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <a href="/posts/<%= c.id %>" class="text-decoration-none"><%= c.title %></a>
+              <i class="bi bi-chevron-right text-muted"></i>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+

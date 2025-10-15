@@ -1,0 +1,255 @@
+/* Main content layout - centered responsive container (topbar layout) */
+.main-content {
+  margin-left: 0;
+  margin-right: 0;
+  padding: 1.5rem 1rem;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: #f9fafb;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Header section */
+.main-content h1 {
+  font-weight: 700;
+  color: #0d6efd;
+  letter-spacing: -0.02em;
+}
+
+.badge {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+}
+
+/* Post Cards */
+.post-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.post-card {
+  border: none;
+  border-radius: 0.75rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.post-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-body {
+  padding: 1.75rem;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.card-title a {
+  transition: color 0.2s;
+}
+
+.card-title a:hover {
+  color: #0d6efd !important;
+}
+
+.card-text {
+  color: #6c757d;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+/* Post meta info */
+.post-meta {
+  font-size: 0.875rem;
+  color: #6c757d;
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.post-meta i {
+  font-size: 1rem;
+  margin-right: 0.375rem;
+  opacity: 0.8;
+}
+
+/* Alert for no posts */
+.alert {
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  font-size: 1rem;
+}
+
+.alert i {
+  font-size: 1.25rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .post-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content { padding: 1rem; }
+  
+  .post-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .post-meta {
+    flex-direction: column;
+    gap: 0.5rem !important;
+  }
+}
+
+@media (min-width: 993px) {
+  .post-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Thai Font Support */
+body {
+  font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Smooth transitions */
+a, button, .card, .badge {
+  transition: all 0.3s ease;
+}
+
+/* News section button fix */
+.news-btn-fix {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; /* Explicit fixed width */
+  height: 32px; /* Explicit fixed height */
+  padding: 0; /* Remove padding to ensure exact width/height */
+  border-radius: .25rem; /* Small border-radius for consistency */
+  cursor: pointer;
+  text-decoration: none; /* For the <a> tag */
+}
+
+.news-btn-fix i {
+  font-size: 1rem; /* Standardized icon size */
+  line-height: 1;
+  flex-shrink: 0; /* Prevent icon from shrinking */
+}
+
+.btn-primary-outline {
+  background-color: transparent;
+  border: 1px solid #0d6efd;
+  color: #0d6efd;
+}
+
+.btn-primary-outline:hover {
+  background-color: #0d6efd;
+  color: #fff;
+}
+
+.btn-danger-outline {
+  background-color: transparent;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+}
+
+.btn-danger-outline:hover {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+/* News list scrollbar styling */
+.news-list {
+  scrollbar-width: thin;
+  scrollbar-color: #6c757d #f8f9fa;
+}
+
+.news-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.news-list::-webkit-scrollbar-track {
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.news-list::-webkit-scrollbar-thumb {
+  background-color: #6c757d;
+  border-radius: 4px;
+  border: 2px solid #f8f9fa;
+}
+
+.news-list::-webkit-scrollbar-thumb:hover {
+  background-color: #495057;
+}
+
+/* Add a subtle gradient fade at the bottom to indicate scrollable content */
+.news-list::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: linear-gradient(transparent, #fff);
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.d-flex.gap-2 { align-items: stretch; }
+
+/* Equal width action row */
+.equal-actions { display: flex; gap: .5rem; align-items: stretch; }
+.equal-actions > * { flex: 1 1 0; }
+.equal-actions form { display: flex; }
+.equal-actions form .action-btn { width: 100%; }
+
+/* Compact variant: keep buttons left and fixed width */
+.equal-actions.compact { justify-content: flex-start; }
+.equal-actions.compact > * { flex: 0 0 160px; }
+.equal-actions.compact form { flex: 0 0 160px; }
+.action-btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: .5rem .75rem; border: 1px solid #dee2e6; border-radius: .5rem; background: #fff; color: #212529; text-decoration: none; transition: all .2s; box-sizing: border-box; min-height: 42px; line-height: 1.25; font-weight: 500; }
+.action-btn i { margin-right: .5rem; line-height: 1; }
+button.action-btn { -webkit-appearance: none; appearance: none; }
+.action-btn:hover { background: #f8f9fa; border-color: #0d6efd; color: #0d6efd; }
+.action-btn.danger { border-color: #dc3545; color: #dc3545; }
+.action-btn.danger:hover { background: #fff5f5; border-color: #dc3545; color: #dc3545; }
+
+/* Responsive improvements for post detail layout */
+.member-management table { width: 100%; }
+.member-management .btn { white-space: nowrap; }
+
+@media (max-width: 992px) {
+  .card .card-body { padding: 1rem; }
+}
+
+@media (max-width: 768px) {
+  .member-management table { font-size: .9rem; }
+  .member-management .btn { padding: .25rem .5rem; font-size: .825rem; }
+  .news-list { max-height: 320px; }
+}
+
+@media (max-width: 576px) {
+  .post-meta { gap: .5rem !important; }
+  .card-body { padding: .875rem; }
+  .table-responsive { -webkit-overflow-scrolling: touch; }
+  .member-management table th,
+  .member-management table td { white-space: nowrap; }
+}
+
+/* Generic responsive helpers */
+img, video { max-width: 100%; height: auto; }
+.table { width: 100%; }
+.table-responsive { width: 100%; overflow-x: auto; }

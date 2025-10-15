@@ -1,0 +1,98 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+    <h1 class="h3 mb-0"><%= event.title %></h1>
+    <div class="text-muted">
+      <i class="bi bi-geo"></i> <%= event.place_name %> •
+      <i class="bi bi-calendar"></i> <%= event.date %> •
+      <i class="bi bi-clock"></i> <%= event.time_start %>-<%= event.time_end %>
+      <% if (event.is_canceled === 1) { %>
+        <span class="badge bg-danger ms-2">ยกเลิกแล้ว</span>
+      <% } %>
+    </div>
+  </div>
+
+  <% if (event.description) { %>
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body"><%= event.description %></div>
+    </div>
+  <% } %>
+
+  <div class="row g-3">
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="mb-3">ผู้เข้าร่วม</h5>
+          <% if (participants.length === 0) { %>
+            <div class="text-muted">ยังไม่มีผู้เข้าร่วม</div>
+          <% } else { %>
+            <ul class="list-group">
+              <% participants.forEach(p => { %>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="fw-semibold"><%= p.f_name %> <%= p.l_name %> (<%= p.student_id %>)</div>
+                    <small class="text-muted">สถานะ: <%= p.status %> • คะแนน: <%= p.points %></small>
+                  </div>
+                  <% if (canManage) { %>
+                  <form action="/events/<%= event.id %>/attendance" method="POST" class="d-flex align-items-center gap-2">
+                    <input type="hidden" name="user_id" value="<%= p.user_id %>">
+                    <select class="form-select form-select-sm" name="attended">
+                      <option value="true" <%= p.status === 'attended' ? 'selected' : '' %>>มา</option>
+                      <option value="false" <%= p.status === 'absent' ? 'selected' : '' %>>ไม่มา</option>
+                      <option value="joined" <%= p.status === 'joined' ? 'selected' : '' %>>ลงทะเบียน</option>
+                    </select>
+                    <input type="number" class="form-control form-control-sm" name="points" value="<%= p.points %>" min="0" style="width:100px;">
+                    <button class="btn btn-sm btn-outline-primary">บันทึก</button>
+                  </form>
+                  <% } %>
+                </li>
+              <% }) %>
+            </ul>
+          <% } %>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="mb-3">การดำเนินการ</h5>
+          <% if (canJoin) { %>
+            <% if (alreadyJoined) { %>
+              <button class="btn btn-outline-secondary" disabled>เข้าร่วมแล้ว</button>
+            <% } else { %>
+              <form action="/events/<%= event.id %>/join" method="POST" class="d-inline">
+                <button class="btn btn-primary" <%= (event.is_open === 1 && event.is_canceled !== 1 && event.is_ended !== 1) ? '' : 'disabled' %>>เข้าร่วมกิจกรรม</button>
+              </form>
+            <% } %>
+          <% } else { %>
+            <div class="text-muted">ต้องเป็นสมาชิกชมรมเพื่อเข้าร่วม</div>
+          <% } %>
+          <% if (canManage) { %>
+            <form action="/events/<%= event.id %>/toggle" method="POST" class="d-inline ms-2">
+              <% if (event.is_canceled === 1 || event.is_ended === 1) { %>
+                <button class="btn btn-outline-secondary" disabled>ปิดรับสมัคร</button>
+              <% } else if (event.is_open === 1) { %>
+                <button class="btn btn-outline-secondary">ปิดรับสมัคร</button>
+              <% } else { %>
+                <button class="btn btn-outline-success">เปิดรับสมัคร</button>
+              <% } %>
+            </form>
+            <form action="/events/<%= event.id %>/cancel" method="POST" class="d-inline ms-2" onsubmit="return confirm('ยืนยันยกเลิกกิจกรรมนี้หรือไม่?');">
+              <button class="btn btn-outline-danger" <%= event.is_canceled === 1 ? 'disabled' : '' %>>ยกเลิกกิจกรรม</button>
+            </form>
+            <form action="/events/<%= event.id %>/end" method="POST" class="d-inline ms-2" onsubmit="return confirm('ยืนยันสิ้นสุดกิจกรรมนี้หรือไม่?');">
+              <button class="btn btn-outline-dark" <%= event.is_ended === 1 ? 'disabled' : '' %>>สิ้นสุดกิจกรรม</button>
+            </form>
+            <% if (event.capacity) { %>
+              <div class="mt-2 text-muted">จำนวนรับ: <%= event.capacity %></div>
+            <% } %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

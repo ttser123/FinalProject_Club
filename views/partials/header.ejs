@@ -1,0 +1,116 @@
+<!-- เพิ่ม Bootstrap 5 CSS และ Icon ใน head -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/partials/header.css">
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="/index" class="brand">
+      <img src="/images/logo.png" alt="Logo" class="brand-logo">
+      <span class="brand-name">Club Management</span>
+    </a>
+    <form action="/index/search" method="get" class="topbar-search">
+      <input type="text" name="keyword" placeholder="ค้นหา..." value="<%= typeof keyword !== 'undefined' ? keyword : '' %>">
+      <button type="submit" aria-label="ค้นหา"><i class="bi bi-search"></i></button>
+    </form>
+  </div>
+  <div class="topbar-center">
+    <% if (user) { %>
+      <nav class="topbar-secondary inline">
+        <ul class="topbar-menu">
+          <% if (user && (user.role === 'admin' || !isClubMember)) { %>
+            <li><a href="/index"><i class="bi bi-calendar-event"></i> ชมรมทั้งหมด</a></li>
+          <% } %>
+          <% if (user && user.role !== 'admin') { %>
+            <li><a href="/posts"><i class="bi bi-journal-check"></i> ชมรมของฉัน</a></li>
+          <% } %>
+          <% if (user && user.role === 'leader') { %>
+            <li><a href="/booking"><i class="bi bi-calendar-check"></i> จองสถานที่</a></li>
+          <% } %>
+          <% if (user && user.role === 'admin') { %>
+            <li><a href="/posts/add"><i class="bi bi-plus-circle"></i> สร้างชมรม</a></li>
+          <% } %>
+          <li><a href="/events"><i class="bi bi-activity"></i> กิจกรรม</a></li>
+          <li><a href="/dashboard"><i class="bi bi-house-door"></i> แดชบอร์ด</a></li>
+          <li><a href="/settings"><i class="bi bi-gear"></i> ตั้งค่า</a></li>
+        </ul>
+      </nav>
+    <% } %>
+  </div>
+  <div class="topbar-right">
+    <% if (user) { %>
+      <button class="btn btn-link d-lg-none" id="mobileMenuToggle" aria-label="เมนู" title="เมนู">
+        <i class="bi bi-list" style="font-size:1.4rem"></i>
+      </button>
+      <a href="/notifications" class="topbar-icon position-relative" title="การแจ้งเตือน">
+        <i class="bi bi-bell"></i>
+        <% if (typeof unreadCount !== 'undefined' && unreadCount > 0) { %>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="font-size: 0.6rem; padding: 0.2em 0.4em;">
+            <%= unreadCount %>
+          </span>
+        <% } %>
+      </a>
+      
+      <div class="profile">
+        <i class="bi bi-person-circle"></i>
+        <span class="profile-name"><%= user.f_name %></span>
+      </div>
+      <% if (user) { %>
+        <li><a href="/auth/logout" class="text-danger"><i class="bi bi-box-arrow-left"></i> Logout</a></li>
+      <% } %>
+    <% } %>
+    <!-- sidebar toggle removed -->
+  </div>
+</header>
+<% if (user) { %>
+<div class="mobile-menu" id="mobileMenu" hidden>
+  <ul>
+    <% if (user && (user.role === 'admin' || !isClubMember)) { %>
+      <li><a href="/index"><i class="bi bi-calendar-event"></i> ชมรมทั้งหมด</a></li>
+    <% } %>
+    <% if (user && user.role !== 'admin') { %>
+      <li><a href="/posts"><i class="bi bi-journal-check"></i> ชมรมของฉัน</a></li>
+    <% } %>
+    <% if (user && user.role === 'leader') { %>
+      <li><a href="/booking"><i class="bi bi-calendar-check"></i> จองสถานที่</a></li>
+    <% } %>
+    <% if (user && user.role === 'admin') { %>
+      <li><a href="/posts/add"><i class="bi bi-plus-circle"></i> สร้างชมรม</a></li>
+    <% } %>
+    <li><a href="/events"><i class="bi bi-activity"></i> กิจกรรม</a></li>
+    <li><a href="/dashboard"><i class="bi bi-house-door"></i> แดชบอร์ด</a></li>
+    <li><a href="/settings"><i class="bi bi-gear"></i> ตั้งค่า</a></li>
+  </ul>
+  <div class="backdrop" id="mobileMenuBackdrop"></div>
+</div>
+<% } %>
+<script>
+  function confirmDelete(event) {
+    event.preventDefault();
+    if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบโพสต์นี้?")) {
+      event.target.submit();
+    }
+  }
+  (function(){
+    var btn = document.getElementById('mobileMenuToggle');
+    var menu = document.getElementById('mobileMenu');
+    var backdrop = document.getElementById('mobileMenuBackdrop');
+    if (btn && menu) {
+      btn.addEventListener('click', function(){
+        var isHidden = menu.hasAttribute('hidden');
+        if (isHidden) menu.removeAttribute('hidden'); else menu.setAttribute('hidden','');
+      });
+    }
+    if (backdrop) {
+      backdrop.addEventListener('click', function(){ menu && menu.setAttribute('hidden',''); });
+    }
+    // Close on link click
+    var links = menu ? menu.querySelectorAll('a') : [];
+    links.forEach(function(a){ a.addEventListener('click', function(){ menu.setAttribute('hidden',''); }); });
+    // Close on ESC
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { menu && menu.setAttribute('hidden',''); } });
+    // Auto-close on resize to desktop
+    window.addEventListener('resize', function(){ if (window.innerWidth >= 992) { menu && menu.setAttribute('hidden',''); } });
+  })();
+</script>

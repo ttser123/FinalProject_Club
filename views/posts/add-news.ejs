@@ -1,0 +1,59 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="mb-0">เพิ่มข่าวสาร</h4>
+        </div>
+        <div class="card-body">
+          <form action="/posts/<%= post.id %>/news" method="POST">
+            <div class="mb-3">
+              <label for="title" class="form-label">หัวข้อข่าว</label>
+              <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="content" class="form-label">รายละเอียด</label>
+              <textarea class="form-control" id="content" name="content" rows="5" required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="category" class="form-label">หมวดหมู่</label>
+              <select class="form-select" id="category" name="category" required>
+                <option value="">เลือกหมวดหมู่</option>
+                <option value="ประชุม">ประชุม</option>
+                <option value="กิจกรรม">กิจกรรม</option>
+                <option value="แจ้งเตือน">แจ้งเตือน</option>
+              </select>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <a href="/posts/<%= post.id %>" class="btn btn-secondary">ยกเลิก</a>
+              <button type="submit" class="btn btn-primary">บันทึกข่าวสาร</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // เพิ่ม JavaScript สำหรับการจัดการฟอร์ม (ถ้าต้องการ)
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+      const title = document.getElementById('title').value.trim();
+      const content = document.getElementById('content').value.trim();
+      const category = document.getElementById('category').value;
+
+      if (!title || !content || !category) {
+        e.preventDefault();
+        alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+      }
+    });
+  });
+</script> 

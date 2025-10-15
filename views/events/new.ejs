@@ -1,0 +1,61 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+
+<div class="main-content">
+  <h1 class="h3 mb-4">สร้างกิจกรรมจากการจองสถานที่</h1>
+  <% if (error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+  <% if (!postId && leaderClubs) { %>
+    <div class="card p-3 mb-3">
+      <form action="/events/new" method="GET" class="row g-2 align-items-end">
+        <div class="col-sm-8">
+          <label class="form-label">เลือกชมรมที่ดูแล</label>
+          <select class="form-select" name="postId" required>
+            <option value="">-- เลือกชมรม --</option>
+            <% leaderClubs.forEach(c => { %>
+              <option value="<%= c.id %>"><%= c.title %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div class="col-sm-4">
+          <button class="btn btn-primary w-100">ถัดไป</button>
+        </div>
+      </form>
+    </div>
+  <% } %>
+  <form action="/events" method="POST" class="card p-3 shadow-sm" <%= !postId ? 'style="display:none;"' : '' %>>
+    <input type="hidden" name="post_id" value="<%= postId %>">
+    <div class="mb-3">
+      <label class="form-label">ชื่อกิจกรรม</label>
+      <input type="text" class="form-control" name="title" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">รายละเอียด</label>
+      <textarea class="form-control" name="description" rows="4"></textarea>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">จำนวนรับ (ปล่อยว่างหากไม่จำกัด)</label>
+      <input type="number" class="form-control" name="capacity" min="1" placeholder="เช่น 30">
+    </div>
+    <div class="form-check form-switch mb-3">
+      <input class="form-check-input" type="checkbox" role="switch" id="isOpenSwitch" name="is_open" checked>
+      <label class="form-check-label" for="isOpenSwitch">เปิดรับการสมัคร</label>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">เลือกการจองสถานที่</label>
+      <select class="form-select" name="booking_id" required>
+        <option value="">-- เลือกการจอง --</option>
+        <% bookings.forEach(b => { %>
+          <option value="<%= b.book_id %>">[<%= b.date %> <%= b.time %>] <%= b.place_name %> - <%= b.book_name %></option>
+        <% }) %>
+      </select>
+      <div class="form-text">เวลาและสถานที่จะอิงจากรายการจองที่เลือก</div>
+    </div>
+    <div class="text-end">
+      <button type="submit" class="btn btn-primary">สร้างกิจกรรม</button>
+    </div>
+  </form>
+</div>
+
+

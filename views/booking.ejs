@@ -1,0 +1,45 @@
+<%- include('./partials/header') %>
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/pages/booking.css">
+
+<div class="main-content mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="mb-0">ตารางการจองสถานที่</h1>
+    <a href="/booking/new" class="btn btn-primary">+ สร้างการจองใหม่</a>
+  </div>
+  <% if (typeof success !== 'undefined') { %>
+    <div class="alert alert-success">จองสำเร็จ!</div>
+  <% } %>
+  <div class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ชื่อคนจอง</th>
+              <th>หัวข้อการจอง</th>
+              <th>สถานที่</th>
+              <th>วันและเวลา</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (bookings && bookings.length > 0) { %>
+              <% bookings.forEach(b => { %>
+                <tr>
+                  <td><%= b.reserver_name %></td>
+                  <td><%= b.book_name %></td>
+                  <td><%= b.place_name %></td>
+                  <td><%= new Date(b.date).toLocaleDateString('th-TH') %> เวลา <%= b.time %></td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="4" class="text-muted">ยังไม่มีรายการจอง</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
