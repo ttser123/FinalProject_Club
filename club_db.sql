@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 24, 2025 at 04:31 PM
+-- Generation Time: Oct 15, 2025 at 08:14 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -42,7 +42,9 @@ CREATE TABLE `bookings` (
 
 INSERT INTO `bookings` (`book_id`, `book_name`, `place_id`, `student_id`, `date`, `time`) VALUES
 (4, 'จอง', 1, '65160251', '2025-09-24', '08:30-11:00'),
-(6, '....', 1, '65160251', '2025-09-25', '08:00-11:30');
+(6, '....', 1, '65160251', '2025-09-25', '08:00-11:30'),
+(7, 'ทำงาน', 2, '65160251', '2025-10-20', '09:30-10:30'),
+(8, 'test02', 2, '65160251', '2025-10-30', '12:30-15:30');
 
 -- --------------------------------------------------------
 
@@ -129,6 +131,61 @@ INSERT INTO `club_members` (`id`, `post_id`, `user_id`, `status`, `created_at`, 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `events`
+--
+
+CREATE TABLE `events` (
+  `id` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `booking_id` int(11) NOT NULL,
+  `date` date NOT NULL,
+  `time_start` varchar(5) NOT NULL,
+  `time_end` varchar(5) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `capacity` int(11) DEFAULT NULL,
+  `is_open` tinyint(1) NOT NULL DEFAULT 1,
+  `is_canceled` tinyint(1) NOT NULL DEFAULT 0,
+  `is_ended` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `events`
+--
+
+INSERT INTO `events` (`id`, `post_id`, `title`, `description`, `booking_id`, `date`, `time_start`, `time_end`, `created_at`, `capacity`, `is_open`, `is_canceled`, `is_ended`) VALUES
+(1, 1, 'ทำงาน', 'ทำงาน', 7, '2025-10-20', '09:30', '10:30', '2025-10-15 16:29:28', NULL, 0, 0, 0),
+(2, 1, 'test2', 'test2', 8, '2025-10-30', '12:30', '15:30', '2025-10-15 17:00:03', 10, 0, 1, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_participants`
+--
+
+CREATE TABLE `event_participants` (
+  `id` int(11) NOT NULL,
+  `event_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `status` enum('joined','attended','absent') NOT NULL DEFAULT 'joined',
+  `points` int(11) NOT NULL DEFAULT 0,
+  `joined_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `event_participants`
+--
+
+INSERT INTO `event_participants` (`id`, `event_id`, `user_id`, `status`, `points`, `joined_at`) VALUES
+(1, 1, 2, 'attended', 10, '2025-10-15 16:29:32'),
+(3, 1, 3, 'attended', 10, '2025-10-15 16:34:24'),
+(10, 2, 3, 'attended', 20, '2025-10-15 17:01:55'),
+(12, 2, 2, 'joined', 0, '2025-10-15 17:02:49');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `files`
 --
 
@@ -159,6 +216,16 @@ CREATE TABLE `news` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `news`
+--
+
+INSERT INTO `news` (`id`, `post_id`, `title`, `content`, `category`, `created_at`, `updated_at`) VALUES
+(1, 1, 'ประกาศ 001', 'กหฟกฟ', 'ประชุม', '2025-10-15 17:08:24', '2025-10-15 17:08:24'),
+(2, 1, 'ฟหกฟห', 'กฟหกฟหก', 'แจ้งเตือน', '2025-10-15 17:09:01', '2025-10-15 17:09:01'),
+(3, 1, 'กฟหกฟหก', 'กฟหกฟหก', 'กิจกรรม', '2025-10-15 17:09:06', '2025-10-15 17:09:06'),
+(4, 1, 'กหฟกฟห', 'กฟหกฟห', 'แจ้งเตือน', '2025-10-15 17:09:11', '2025-10-15 17:09:11');
+
 -- --------------------------------------------------------
 
 --
@@ -179,7 +246,7 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`id`, `user_id`, `post_id`, `message`, `is_read`, `created_at`) VALUES
-(1, 1, 1, 'user0001 user0001 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 0, '2025-09-24 11:03:02'),
+(1, 1, 1, 'user0001 user0001 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 1, '2025-09-24 11:03:02'),
 (2, 1, 1, 'user0001 user0001 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 1, '2025-09-24 11:03:44'),
 (3, 1, 1, 'user0001 user0001 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 1, '2025-09-24 11:05:42'),
 (4, 3, 1, 'การสมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ ได้รับการอนุมัติแล้ว', 0, '2025-09-24 11:06:01');
@@ -219,15 +286,16 @@ CREATE TABLE `posts` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `cover_image` varchar(255) DEFAULT NULL,
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `member_limit` int(11) NOT NULL DEFAULT 50
+  `member_limit` int(11) NOT NULL DEFAULT 50,
+  `line_group_url` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `posts`
 --
 
-INSERT INTO `posts` (`id`, `title`, `content`, `user_id`, `category_id`, `created_at`, `cover_image`, `updated_at`, `member_limit`) VALUES
-(1, 'ชมรมถ่ายภาพธรรมชาติ', 'ถ่ายภาพธรรมชาติ', 1, 12, '2025-09-24 11:00:01', NULL, '2025-09-24 11:00:01', 19);
+INSERT INTO `posts` (`id`, `title`, `content`, `user_id`, `category_id`, `created_at`, `cover_image`, `updated_at`, `member_limit`, `line_group_url`) VALUES
+(1, 'ชมรมถ่ายภาพธรรมชาติ', 'ถ่ายภาพธรรมชาติ', 1, 12, '2025-09-24 11:00:01', NULL, '2025-10-15 17:33:29', 19, 'https://discord.gg/HBAc7ez9');
 
 -- --------------------------------------------------------
 
@@ -303,6 +371,22 @@ ALTER TABLE `club_members`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- Indexes for table `events`
+--
+ALTER TABLE `events`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `post_id` (`post_id`),
+  ADD KEY `booking_id` (`booking_id`);
+
+--
+-- Indexes for table `event_participants`
+--
+ALTER TABLE `event_participants`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uniq_event_user` (`event_id`,`user_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `files`
 --
 ALTER TABLE `files`
@@ -363,7 +447,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `book_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `book_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -378,6 +462,18 @@ ALTER TABLE `club_members`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT for table `events`
+--
+ALTER TABLE `events`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `event_participants`
+--
+ALTER TABLE `event_participants`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+--
 -- AUTO_INCREMENT for table `files`
 --
 ALTER TABLE `files`
@@ -387,7 +483,7 @@ ALTER TABLE `files`
 -- AUTO_INCREMENT for table `news`
 --
 ALTER TABLE `news`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `notifications`
@@ -429,6 +525,20 @@ ALTER TABLE `users`
 ALTER TABLE `club_members`
   ADD CONSTRAINT `club_members_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `club_members_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `events`
+--
+ALTER TABLE `events`
+  ADD CONSTRAINT `events_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `events_ibfk_2` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`book_id`);
+
+--
+-- Constraints for table `event_participants`
+--
+ALTER TABLE `event_participants`
+  ADD CONSTRAINT `event_participants_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `event_participants_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `files`
