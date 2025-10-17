@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 15, 2025 at 08:14 PM
+-- Generation Time: Oct 17, 2025 at 03:00 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -44,7 +44,10 @@ INSERT INTO `bookings` (`book_id`, `book_name`, `place_id`, `student_id`, `date`
 (4, 'จอง', 1, '65160251', '2025-09-24', '08:30-11:00'),
 (6, '....', 1, '65160251', '2025-09-25', '08:00-11:30'),
 (7, 'ทำงาน', 2, '65160251', '2025-10-20', '09:30-10:30'),
-(8, 'test02', 2, '65160251', '2025-10-30', '12:30-15:30');
+(8, 'test02', 2, '65160251', '2025-10-30', '12:30-15:30'),
+(9, 'medasd', 2, '65160251', '2025-10-18', '08:00-15:30'),
+(10, 'dasdada', 1, '65160251', '2025-10-25', '10:00-13:30'),
+(11, 'ทำงาน', 2, '65160002', '2025-10-21', '10:00-13:00');
 
 -- --------------------------------------------------------
 
@@ -126,7 +129,12 @@ CREATE TABLE `club_members` (
 INSERT INTO `club_members` (`id`, `post_id`, `user_id`, `status`, `created_at`, `role`) VALUES
 (1, 1, 1, 'approved', '2025-09-24 11:00:01', 'admin'),
 (2, 1, 2, 'approved', '2025-09-24 11:00:01', 'leader'),
-(5, 1, 3, 'approved', '2025-09-24 11:05:42', 'member');
+(5, 1, 3, 'approved', '2025-09-24 11:05:42', 'member'),
+(6, 1, 7, 'approved', '2025-10-17 09:18:05', 'member'),
+(9, 1, 6, 'pending', '2025-10-17 09:44:29', 'member'),
+(10, 2, 1, 'approved', '2025-10-17 11:43:39', 'admin'),
+(11, 2, 4, 'approved', '2025-10-17 11:43:39', 'leader'),
+(12, 2, 5, 'approved', '2025-10-17 12:12:22', 'member');
 
 -- --------------------------------------------------------
 
@@ -156,7 +164,10 @@ CREATE TABLE `events` (
 
 INSERT INTO `events` (`id`, `post_id`, `title`, `description`, `booking_id`, `date`, `time_start`, `time_end`, `created_at`, `capacity`, `is_open`, `is_canceled`, `is_ended`) VALUES
 (1, 1, 'ทำงาน', 'ทำงาน', 7, '2025-10-20', '09:30', '10:30', '2025-10-15 16:29:28', NULL, 0, 0, 0),
-(2, 1, 'test2', 'test2', 8, '2025-10-30', '12:30', '15:30', '2025-10-15 17:00:03', 10, 0, 1, 1);
+(2, 1, 'test2', 'test2', 8, '2025-10-30', '12:30', '15:30', '2025-10-15 17:00:03', 10, 0, 1, 1),
+(3, 1, 'dasd', 'dada', 9, '2025-10-18', '08:00', '15:30', '2025-10-17 10:21:44', 10, 0, 1, 1),
+(4, 1, 'dadda', 'sadasda', 10, '2025-10-25', '10:00', '13:30', '2025-10-17 11:32:59', 50, 1, 0, 0),
+(5, 2, '2030203', '10', 11, '2025-10-21', '10:00', '13:00', '2025-10-17 11:46:14', 40, 1, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -181,7 +192,8 @@ INSERT INTO `event_participants` (`id`, `event_id`, `user_id`, `status`, `points
 (1, 1, 2, 'attended', 10, '2025-10-15 16:29:32'),
 (3, 1, 3, 'attended', 10, '2025-10-15 16:34:24'),
 (10, 2, 3, 'attended', 20, '2025-10-15 17:01:55'),
-(12, 2, 2, 'joined', 0, '2025-10-15 17:02:49');
+(12, 2, 2, 'absent', 0, '2025-10-15 17:02:49'),
+(19, 4, 3, 'joined', 0, '2025-10-17 11:33:35');
 
 -- --------------------------------------------------------
 
@@ -249,7 +261,14 @@ INSERT INTO `notifications` (`id`, `user_id`, `post_id`, `message`, `is_read`, `
 (1, 1, 1, 'user0001 user0001 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 1, '2025-09-24 11:03:02'),
 (2, 1, 1, 'user0001 user0001 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 1, '2025-09-24 11:03:44'),
 (3, 1, 1, 'user0001 user0001 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 1, '2025-09-24 11:05:42'),
-(4, 3, 1, 'การสมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ ได้รับการอนุมัติแล้ว', 0, '2025-09-24 11:06:01');
+(4, 3, 1, 'การสมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ ได้รับการอนุมัติแล้ว', 0, '2025-09-24 11:06:01'),
+(5, 1, 1, 'user0005 user0005 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 1, '2025-10-17 09:18:05'),
+(6, 7, 1, 'การสมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ ได้รับการอนุมัติแล้ว', 0, '2025-10-17 09:18:19'),
+(7, 1, 1, 'user0004 user0004 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 1, '2025-10-17 09:19:35'),
+(8, 1, 1, 'user0004 user0004 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 1, '2025-10-17 09:20:02'),
+(9, 1, 1, 'user0004 user0004 สมัครเข้าชมรม ชมรมถ่ายภาพธรรมชาติ', 1, '2025-10-17 09:44:29'),
+(10, 1, 2, 'user0003 user0003 สมัครเข้าชมรม game dev', 1, '2025-10-17 12:12:22'),
+(11, 5, 2, 'การสมัครเข้าชมรม game dev ได้รับการอนุมัติแล้ว', 0, '2025-10-17 12:12:32');
 
 -- --------------------------------------------------------
 
@@ -295,7 +314,8 @@ CREATE TABLE `posts` (
 --
 
 INSERT INTO `posts` (`id`, `title`, `content`, `user_id`, `category_id`, `created_at`, `cover_image`, `updated_at`, `member_limit`, `line_group_url`) VALUES
-(1, 'ชมรมถ่ายภาพธรรมชาติ', 'ถ่ายภาพธรรมชาติ', 1, 12, '2025-09-24 11:00:01', NULL, '2025-10-15 17:33:29', 19, 'https://discord.gg/HBAc7ez9');
+(1, 'ชมรมถ่ายภาพธรรมชาติ', 'ถ่ายภาพธรรมชาติ', 1, 12, '2025-09-24 11:00:01', NULL, '2025-10-17 09:57:09', 19, 'https://discord.gg/qUDpyyjr'),
+(2, 'game dev', 'game dev', 1, 23, '2025-10-17 11:43:39', '1760701419784-949937962.jpg', '2025-10-17 11:43:39', 20, NULL);
 
 -- --------------------------------------------------------
 
@@ -340,7 +360,7 @@ INSERT INTO `users` (`id`, `student_id`, `username`, `email`, `password`, `phone
 (1, '65160258', 'admintoey', '65160258@go.buu.ac.th', '$2b$10$7IvMOpcorkkxIF3m0sg32OPrmhCzSLA9vFl/bDIBihQcCPiigOAIe', '0957743139', 'admintoey', 'admintoey', 'admin', '2025-09-24 10:49:49'),
 (2, '65160251', 'leaderpao', '65160251@go.buu.ac.th', '$2b$10$lEFYvw0mgzb2WJN4vR5FJubyskPW4w4OqqIeDEUgmdpFGh.KI3hkm', '0957743138', 'leaderpao', 'leaderpao', 'leader', '2025-09-24 10:50:41'),
 (3, '65160001', 'user0001', '65160001@go.buu.ac.th', '$2b$10$TBxcwKY7fecBzZKREaP./e0i9itjvuNkm3dmX4t6f/sjD7PMy5IUu', '0957743137', 'user0001', 'user0001', 'member', '2025-09-24 10:51:14'),
-(4, '65160002', 'user0002', '65160002@go.buu.ac.th', '$2b$10$PU7.XvtwU8UH4eDir3/j7el1.GhCes2x1OnXJPmDXjlk1Tv8frPCq', '0957743136', 'user0002', 'user0002', 'member', '2025-09-24 10:51:50'),
+(4, '65160002', 'user0002', '65160002@go.buu.ac.th', '$2b$10$PU7.XvtwU8UH4eDir3/j7el1.GhCes2x1OnXJPmDXjlk1Tv8frPCq', '0957743136', 'user0002', 'user0002', 'leader', '2025-09-24 10:51:50'),
 (5, '65160003', 'user0003', '65160003@go.buu.ac.th', '$2b$10$JOpmp1ctz3mQ6g/59SlTsOMLEuQgDPcLTkCrJy8awWkU3miTjmaxm', '0957743131', 'user0003', 'user0003', 'member', '2025-09-24 10:52:26'),
 (6, '65160004', 'user0004', '65160004@go.buu.ac.th', '$2b$10$Wgng3QJi/rPh6I0gTAXkUuUzaQmiyZONE1Z9zdtrUXtRxxak2/w9G', '0957743132', 'user0004', 'user0004', 'member', '2025-09-24 10:52:53'),
 (7, '65160005', 'user0005', '65160005@go.buu.ac.th', '$2b$10$YYBzVgIqfntjOFlXzKfbwuGAq5wovlMI3lcb71U9XvdblSz2Q8pX.', '0957743133', 'user0005', 'user0005', 'member', '2025-09-24 10:54:02');
@@ -447,7 +467,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bookings`
 --
 ALTER TABLE `bookings`
-  MODIFY `book_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `book_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -459,19 +479,19 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `club_members`
 --
 ALTER TABLE `club_members`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `event_participants`
 --
 ALTER TABLE `event_participants`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `files`
@@ -489,7 +509,7 @@ ALTER TABLE `news`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `places`
@@ -501,7 +521,7 @@ ALTER TABLE `places`
 -- AUTO_INCREMENT for table `posts`
 --
 ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `role_history`
