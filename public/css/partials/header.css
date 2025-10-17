@@ -27,14 +27,14 @@
 }
 
 .brand-logo {
-  height: 36px;
-  width: 36px;
+  height: 32px;
+  width: 32px;
   object-fit: contain;
   margin-right: 0.5rem;
 }
 
 .brand-name {
-  font-size: 1.125rem;
+  font-size: 1rem;
 }
 
 .topbar-search {
@@ -82,6 +82,7 @@
   border-radius: 0.4rem;
   color: #212529;
   text-decoration: none;
+  font-size: 0.95rem;
 }
 
 .topbar-menu a:hover {
@@ -98,7 +99,7 @@
 .topbar-icon {
   color: #212529;
   text-decoration: none;
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .profile {
@@ -112,6 +113,7 @@
 
 .profile-name {
   font-weight: 600;
+  font-size: 0.95rem;
 }
 
 /* Thai Font Support */
@@ -124,10 +126,32 @@ body {
   .topbar-search input { min-width: 140px; }
 }
 
+/* ปรับแต่งขนาดปุ่มค้นหาให้เล็กลง */
+.topbar-search button {
+  padding: 0.1rem 0.1rem !important;
+  font-size: 0.875rem;
+}
+
+.topbar-search button i {
+  font-size: 0.95rem;
+}
+
+.topbar-search input {
+  font-size: 0.9rem;
+}
+
 /* Mobile dropdown menu */
 .mobile-menu { position: fixed; top: 56px; right: 0; left: 0; background: #fff; border-top: 1px solid #dee2e6; z-index: 1029; max-height: calc(100vh - 56px); overflow: auto; }
 .mobile-menu ul { list-style: none; margin: 0; padding: .5rem 1rem; }
 .mobile-menu li { margin: .25rem 0; }
-.mobile-menu a { display: flex; align-items: center; gap: .5rem; padding: .5rem; border-radius: .375rem; color: #212529; text-decoration: none; }
+.mobile-menu a { display: flex; align-items: center; gap: .5rem; padding: .5rem; border-radius: .375rem; color: #212529; text-decoration: none; font-size: .95rem; }
 .mobile-menu a:hover { background: #f8f9fa; color: #0d6efd; }
-.mobile-menu .backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.15); }
+
+/* Notifications dropdown font tweaks */
+.dropdown-menu .list-group-item {
+  font-size: 0.85rem;
+}
+
+.dropdown-menu .list-group-item small {
+  font-size: 0.75rem;
+}

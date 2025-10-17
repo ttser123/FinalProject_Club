@@ -6,7 +6,6 @@
     <h1 class="h3 mb-0">กิจกรรมทั้งหมดของชมรมที่เกี่ยวข้อง</h1>
   </div>
   <div class="table-responsive">
-    <div class="d-flex gap-2"></div>
     <table class="table">
       <thead>
         <tr>
@@ -20,32 +19,45 @@
         </tr>
       </thead>
       <tbody>
-        <% if (!events || events.length === 0) { %>
+        <% 
+          if (!events || events.length === 0) { 
+        %>
           <tr><td colspan="7" class="text-muted">ยังไม่มีกิจกรรม</td></tr>
-        <% } else { %>
-          <% events.forEach(e => { %>
-            <tr>
-              <td><%= e.club_title %></td>
-              <td><%= e.title %></td>
-              <td><%= e.place_name %></td>
-              <td><%= e.date %></td>
-              <td><%= e.time_start %>-<%= e.time_end %></td>
-              <td>
-                <% if (e.is_open === 1) { %>
-                  <span class="badge bg-success">เปิดรับ</span>
-                <% } else { %>
-                  <span class="badge bg-secondary">ปิดรับ</span>
-                <% } %>
-              </td>
-              <td>
-                <a href="/events/<%= e.id %>" class="btn btn-sm btn-outline-primary">ดูรายละเอียด</a>
-              </td>
-            </tr>
-          <% }) %>
-        <% } %>
+        <% 
+          } else { 
+            // เรียงลำดับกิจกรรมจากวันที่ใกล้ที่สุด
+            events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            // ตัวช่วย format วันที่
+            const formatDate = (dateStr) => {
+              const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+              return new Date(dateStr).toLocaleDateString('th-TH', options);
+            }
+
+            events.forEach(e => { 
+        %>
+          <tr>
+            <td><%= e.club_title %></td>
+            <td><%= e.title %></td>
+            <td><%= e.place_name %></td>
+            <td><%= formatDate(e.date) %></td>
+            <td><%= e.time_start %>-<%= e.time_end %></td>
+            <td>
+              <% if (e.is_open === 1) { %>
+                <span class="badge bg-success">เปิดรับ</span>
+              <% } else { %>
+                <span class="badge bg-secondary">ปิดรับ</span>
+              <% } %>
+            </td>
+            <td>
+              <a href="/events/<%= e.id %>" class="btn btn-sm btn-outline-primary">ดูรายละเอียด</a>
+            </td>
+          </tr>
+        <% 
+            }) 
+          } 
+        %>
       </tbody>
     </table>
   </div>
 </div>
-
-

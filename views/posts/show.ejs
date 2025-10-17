@@ -30,37 +30,68 @@
         <%- post.content %>
       </div>
 
-      <!-- ช่องทางการสื่อสาร -->
-      <div class="card my-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">ช่องทางการสื่อสาร</h5>
-          <% if (typeof req !== 'undefined' && req.session && req.session.user && (req.session.user.role === 'admin' || req.session.user.role === 'leader')) { %>
-            <form class="d-flex gap-2" action="/posts/<%= post.id %>/line" method="POST">
-              <input type="url" name="line_group_url" value="<%= post.line_group_url || '' %>" placeholder="https:// (LINE/Discord/Facebook/อื่นๆ)" class="form-control" style="max-width:360px" required>
-              <button class="btn btn-outline-primary btn-sm">บันทึกลิงก์</button>
-            </form>
-          <% } %>
-        </div>
-        <div class="card-body">
-          <% if (post.line_group_url) { %>
-            <a href="<%= post.line_group_url %>" target="_blank" rel="noopener" class="btn btn-success">
-              <i class="bi bi-link-45deg"></i> เปิดช่องทางการสื่อสาร
-            </a>
-            <% if (typeof req !== 'undefined' && req.session && req.session.user && (req.session.user.role === 'admin')) { %>
-              <form action="/posts/<%= post.id %>/line/delete" method="POST" class="d-inline ms-2" onsubmit="return confirm('ลบลิงก์ LINE กลุ่มของชมรมนี้?');">
-                <button class="btn btn-outline-danger btn-sm">ลบลิงก์</button>
-              </form>
-            <% } %>
-          <% } else { %>
-            <div class="text-muted">ยังไม่มีการสร้างกลุ่ม LINE สำหรับชมรมนี้</div>
-          <% } %>
-        </div>
-      </div>
+
 
       <% if (typeof req !== 'undefined' && req.session && req.session.user && 
             (req.session.user.id === post.user_id || (isMember && memberStatus === 'approved'))) { %>
-        <!-- Club Management Section -->
+        
+              <!-- Club Management Section -->
         <div class="club-management mt-5">
+<!-- ช่องทางการสื่อสาร -->
+<div class="card my-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">ช่องทางการสื่อสาร</h5>
+    <% if (typeof req !== 'undefined' && req.session && req.session.user && (req.session.user.role === 'admin' || req.session.user.role === 'leader')) { %>
+      <form class="d-flex gap-2" action="/posts/<%= post.id %>/line" method="POST">
+        <input type="url" name="line_group_url" value="<%= post.line_group_url || '' %>" placeholder="https:// (LINE/Discord/Facebook/อื่นๆ)" class="form-control" style="max-width:360px" required>
+        <button class="btn btn-outline-primary btn-sm">บันทึกลิงก์</button>
+      </form>
+    <% } %>
+  </div>
+
+  <div class="card-body">
+    <% if (post.line_group_url) { %>
+      <% 
+        let platform = 'กลุ่มพูดคุย ';
+        let icon = 'bi-link-45deg text-secondary';
+
+        if (post.line_group_url.includes('line.me')) {
+          platform = 'LINE Group ';
+          icon = 'bi-chat-dots text-success';
+        } else if (post.line_group_url.includes('discord.gg') || post.line_group_url.includes('discord.com')) {
+          platform = 'Discord Server ';
+          icon = 'bi-discord text-primary';
+        } else if (post.line_group_url.includes('facebook.com')) {
+          platform = 'Facebook Group ';
+          icon = 'bi-facebook text-primary';
+        } else if (post.line_group_url.includes('t.me')) {
+          platform = 'Telegram Group ';
+          icon = 'bi-telegram text-info';
+        }
+      %>
+
+      <div class="d-flex align-items-center">
+        <i class="bi <%= icon %> fs-4 me-2"></i>
+        <div>
+          <strong><%= platform %>:</strong>
+          <a href="<%= post.line_group_url %>" target="_blank" rel="noopener" class="text-decoration-none">
+            <%= post.line_group_url %>
+          </a>
+        </div>
+      </div>
+
+      <% if (typeof req !== 'undefined' && req.session && req.session.user && req.session.user.role === 'admin') { %>
+        <form action="/posts/<%= post.id %>/line/delete" method="POST" class="d-inline ms-2" onsubmit="return confirm('ลบลิงก์ช่องทางการสื่อสารนี้?');">
+          <button class="btn btn-outline-danger btn-sm mt-2">ลบลิงก์</button>
+        </form>
+      <% } %>
+
+    <% } else { %>
+      <div class="text-muted">ยังไม่มีการสร้างช่องทางการสื่อสารสำหรับชมรมนี้</div>
+    <% } %>
+  </div>
+</div>      
+
           <!-- ประกาศข่าวสาร -->
           <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -295,7 +326,7 @@
           </div>
         <% } %>
       <% } %>
-
+      
       <!-- Card ขวา: ผู้ดูแลและหัวหน้าชมรม -->
       <div class="card mb-4">
         <div class="card-header">
@@ -345,11 +376,12 @@
           </div>
         </div>
       </div>
-
-      <!-- ย้าย: จัดการสมาชิก ไปฝั่งขวาใต้ผู้ดูแลและหัวหน้าชมรม -->
+      <% if (typeof req !== 'undefined' && req.session && req.session.user && 
+      (req.session.user.id === post.user_id || (isMember && memberStatus === 'approved'))) { %>
+      <!-- ย้าย: จัดการสมาชิก  -->
       <div class="card mb-4">
         <div class="card-header">
-          <h5 class="mb-0">สมาชิก</h5>
+          <h5 class="mb-0">รายชื่อสมาชิก</h5>
         </div>
         <div class="card-body">
           <div class="member-management">
@@ -394,6 +426,7 @@
           </div>
         </div>
       </div>
+      <% } %>
 
       <% if (typeof req !== 'undefined' && req.session && req.session.user) { %>
         <% if (req.session.user.id !== post.user_id) { %>

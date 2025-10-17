@@ -51,23 +51,44 @@
     </div>
   </div>
 
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <h5 class="mb-3">ชมรมที่ดูแล</h5>
-      <% if (leaderClubs.length === 0) { %>
-        <div class="text-muted">คุณยังไม่ได้เป็นหัวหน้าชมรมใด</div>
-      <% } else { %>
-        <ul class="list-group">
-          <% leaderClubs.forEach(c => { %>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              <a href="/posts/<%= c.id %>" class="text-decoration-none"><%= c.title %></a>
-              <i class="bi bi-chevron-right text-muted"></i>
-            </li>
-          <% }) %>
-        </ul>
-      <% } %>
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="mb-3">กิจกรรม</h5>
+          <div class="d-flex gap-3">
+            <div class="flex-fill p-3 bg-light rounded">
+              <div class="text-muted">กำลังจะจัด</div>
+              <div class="fs-4 fw-bold"><%= eventsUpcoming %></div>
+            </div>
+            <div class="flex-fill p-3 bg-light rounded">
+              <div class="text-muted">ที่จัดไปแล้ว</div>
+              <div class="fs-4 fw-bold"><%= eventsPast %></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="mb-3">กิจกรรมใกล้ถึง</h5>
+          <% if (!upcomingEvents || upcomingEvents.length === 0) { %>
+            <div class="text-muted">ไม่มีรายการ</div>
+          <% } else { %>
+            <ul class="list-group">
+              <% upcomingEvents.forEach(e => { %>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <span><%= e.title %></span>
+                  <small class="text-muted"><%= e.date %> <%= e.time_start %>-<%= e.time_end %></small>
+                </li>
+              <% }) %>
+            </ul>
+          <% } %>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 

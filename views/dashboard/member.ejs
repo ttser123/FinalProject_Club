@@ -62,6 +62,32 @@
       <% } %>
     </div>
   </div>
+
+  <div class="card shadow-sm mt-4">
+    <div class="card-body">
+      <h5 class="mb-3">สถิติการเข้าร่วมกิจกรรมย้อนหลัง</h5>
+      <canvas id="attChart"></canvas>
+    </div>
+  </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  (function(){
+    var ctx = document.getElementById('attChart');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: <%- JSON.stringify(attLabels || []) %>,
+          datasets: [
+            { label: 'ฉัน', data: <%- JSON.stringify(attData || []) %>, borderColor: '#0d6efd', tension: .2 },
+            { label: 'ค่าเฉลี่ยสมาชิก', data: <%- JSON.stringify(avgData || []) %>, borderColor: '#6c757d', borderDash: [4,4], tension: .2 }
+          ]
+        },
+        options: { scales: { y: { beginAtZero: true } } }
+      });
+    }
+  })();
+</script>
 

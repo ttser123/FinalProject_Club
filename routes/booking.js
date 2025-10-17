@@ -26,7 +26,7 @@ router.get('/', ensureLeader, async (req, res) => {
              JOIN users u ON u.student_id = b.student_id
              JOIN places pl ON pl.place_id = b.place_id
              ORDER BY b.date DESC, b.time DESC`
-        );
+        );      
         res.render('booking', { bookings, success: req.query.success, user: req.session.user });
     } catch (err) {
         console.error('GET /booking error:', err);

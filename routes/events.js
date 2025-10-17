@@ -48,17 +48,23 @@ router.use(async (req, res, next) => {
   next();
 });
 
-// Leader: show create form - must be leader or admin in that club
+// Leader/Admin: show create form — auto-detect single club (leader) if not provided
 router.get('/new', async (req, res) => {
   try {
     let { postId } = req.query;
+
     if (!postId) {
-      const [leaderClubs] = await db.query(
-        `SELECT p.id, p.title FROM club_members cm JOIN posts p ON p.id = cm.post_id
+      const [rows] = await db.query(
+        `SELECT cm.post_id AS id
+         FROM club_members cm
          WHERE cm.user_id = ? AND cm.role = 'leader' AND cm.status = 'approved'`,
         [req.session.user.id]
       );
-      return res.render('events/new', { postId: null, leaderClubs, bookings: [], error: null });
+      if (rows.length === 0) {
+        return res.status(403).send('ไม่พบชมรมที่คุณเป็นหัวหน้า');
+      }
+      // สมมติว่าเป็นหัวหน้าได้เพียงชมรมเดียว
+      postId = rows[0].id;
     }
 
     // Check membership role

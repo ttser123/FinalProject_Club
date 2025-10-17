@@ -5,7 +5,10 @@
 <div class="main-content mt-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h1 class="mb-0">ตารางการจองสถานที่</h1>
-    <a href="/booking/new" class="btn btn-primary">+ สร้างการจองใหม่</a>
+    <div class="d-flex gap-2">
+      <a href="/booking/new" class="btn btn-primary">+ สร้างการจองใหม่</a>
+    <a href="/events/new<%= (typeof post !== 'undefined' && post && post.id) ? ('?postId=' + post.id) : '' %>" class="btn btn-primary">+ สร้างกิจกรรม</a>
+    </div>
   </div>
   <% if (typeof success !== 'undefined') { %>
     <div class="alert alert-success">จองสำเร็จ!</div>

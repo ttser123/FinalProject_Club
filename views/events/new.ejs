@@ -6,25 +6,7 @@
   <% if (error) { %>
     <div class="alert alert-danger"><%= error %></div>
   <% } %>
-  <% if (!postId && leaderClubs) { %>
-    <div class="card p-3 mb-3">
-      <form action="/events/new" method="GET" class="row g-2 align-items-end">
-        <div class="col-sm-8">
-          <label class="form-label">เลือกชมรมที่ดูแล</label>
-          <select class="form-select" name="postId" required>
-            <option value="">-- เลือกชมรม --</option>
-            <% leaderClubs.forEach(c => { %>
-              <option value="<%= c.id %>"><%= c.title %></option>
-            <% }) %>
-          </select>
-        </div>
-        <div class="col-sm-4">
-          <button class="btn btn-primary w-100">ถัดไป</button>
-        </div>
-      </form>
-    </div>
-  <% } %>
-  <form action="/events" method="POST" class="card p-3 shadow-sm" <%= !postId ? 'style="display:none;"' : '' %>>
+  <form action="/events" method="POST" class="card p-3 shadow-sm">
     <input type="hidden" name="post_id" value="<%= postId %>">
     <div class="mb-3">
       <label class="form-label">ชื่อกิจกรรม</label>

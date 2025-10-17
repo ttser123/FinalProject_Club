@@ -1,0 +1,12 @@
+.notifications-list .notification-item {
+  font-size: 1rem;
+}
+
+.notifications-list .notification-item small {
+  font-size: 0.75rem;
+}
+
+.notification-item.unread {
+  background: #f8f9fa;
+}
+

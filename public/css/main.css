@@ -253,3 +253,11 @@ button.action-btn { -webkit-appearance: none; appearance: none; }
 img, video { max-width: 100%; height: auto; }
 .table { width: 100%; }
 .table-responsive { width: 100%; overflow-x: auto; }
+
+#membersPerClub,
+#eventsPerClub,
+#monthlyUsage {
+  width: 100%;
+  height: 300px; /* หรือปรับเป็น 250px, 400px ตามต้องการ */
+  max-height: 400px;
+}
